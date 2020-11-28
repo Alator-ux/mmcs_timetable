@@ -1,4 +1,16 @@
 import 'package:flutter/material.dart';
+import 'week.dart';
+
+class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
+  Size get preferredSize => const Size.fromHeight(50);
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      centerTitle: true,
+      title: Text('test'),
+    );
+  }
+}
 
 class EZline extends StatelessWidget {
   @override
@@ -27,7 +39,18 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.grey,
+        child: GestureDetector(
+      onHorizontalDragEnd: (details) {
+        if (details.primaryVelocity < 0) {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => WeekPage()),
+          );
+        } else if (details.primaryVelocity > 0) {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => WeekPage()),
+          );
+        }
+      },
       child: Container(
           color: Colors.grey,
           child: ListView(children: [
@@ -140,16 +163,21 @@ class HomePage extends StatelessWidget {
               ),
             ),
           ])),
+    ));
+  }
+}
+
+class MainApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: MyAppBar(),
+        body: HomePage(),
+      ),
     );
   }
 }
 
-void main() => runApp(MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text("Test"),
-        ),
-        body: HomePage(),
-      ),
-    ));
+void main() => runApp(MainApp());
