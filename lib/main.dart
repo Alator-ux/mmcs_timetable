@@ -7,8 +7,128 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       centerTitle: true,
-      title: Text('test'),
+      title: Text('MMCS_TimeTable'),
     );
+  }
+}
+
+// ignore: must_be_immutable
+class Subjects extends StatelessWidget {
+  var time = '08:00';
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        color: Colors.grey,
+        child: ListView(children: [
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: Container(
+              child: Container(
+                color: Color.fromARGB(255, 178, 34, 34),
+                width: MediaQuery.of(context).size.width,
+                height: 150,
+                child: Column(children: [
+                  EzBox(),
+                  Text('Time $time \nauditoriya'),
+                  EzBox(),
+                  EZline(),
+                  EzBox(),
+                  Text('Para \nprepod'),
+                ]),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: Container(
+              child: Container(
+                color: Color.fromARGB(255, 178, 34, 34),
+                width: MediaQuery.of(context).size.width,
+                height: 150,
+                child: Column(children: [
+                  EzBox(),
+                  Text('Time $time \nauditoriya'),
+                  EzBox(),
+                  EZline(),
+                  EzBox(),
+                  Text('Para \nprepod'),
+                ]),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+            child: Container(
+              child: Container(
+                color: Color.fromARGB(255, 178, 34, 34),
+                width: MediaQuery.of(context).size.width,
+                height: 150,
+                child: Column(children: [
+                  EzBox(),
+                  Text('Time $time \nauditoriya'),
+                  EzBox(),
+                  EZline(),
+                  EzBox(),
+                  Text('Para \nprepod'),
+                ]),
+              ),
+            ),
+          ),
+          /*Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+              child: Container(
+                child: Container(
+                  color: Color.fromARGB(255, 178, 34, 34),
+                  width: MediaQuery.of(context).size.width,
+                  height: 150,
+                  child: Column(children: [
+                    EzBox(),
+                    Text('Time $time \nauditoriya'),
+                    EzBox(),
+                    EZline(),
+                    EzBox(),
+                    Text('Para \nprepod'),
+                  ]),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+              child: Container(
+                child: Container(
+                  color: Color.fromARGB(255, 178, 34, 34),
+                  width: MediaQuery.of(context).size.width,
+                  height: 150,
+                  child: Column(children: [
+                    EzBox(),
+                    Text('Time $time \nauditoriya'),
+                    EzBox(),
+                    EZline(),
+                    EzBox(),
+                    Text('Para \nprepod'),
+                  ]),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+              child: Container(
+                child: Container(
+                  color: Color.fromARGB(255, 178, 34, 34),
+                  width: MediaQuery.of(context).size.width,
+                  height: 150,
+                  child: Column(children: [
+                    EzBox(),
+                    Text('Time $time \nauditoriya'),
+                    EzBox(),
+                    EZline(),
+                    EzBox(),
+                    Text('Para \nprepod'),
+                  ]),
+                ),
+              ),
+            ),*/
+        ]));
   }
 }
 
@@ -35,7 +155,6 @@ class EzBox extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
-  final time = 6;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -51,118 +170,7 @@ class HomePage extends StatelessWidget {
           );
         }
       },
-      child: Container(
-          color: Colors.grey,
-          child: ListView(children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-              child: Container(
-                child: Container(
-                  color: Color.fromARGB(255, 178, 34, 34),
-                  width: MediaQuery.of(context).size.width,
-                  height: 150,
-                  child: Column(children: [
-                    EzBox(),
-                    Text('Time $time \nauditoriya'),
-                    EzBox(),
-                    EZline(),
-                    EzBox(),
-                    Text('Para \nprepod'),
-                  ]),
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-              child: Container(
-                child: Container(
-                  color: Color.fromARGB(255, 178, 34, 34),
-                  width: MediaQuery.of(context).size.width,
-                  height: 150,
-                  child: Column(children: [
-                    EzBox(),
-                    Text('Time $time \nauditoriya'),
-                    EzBox(),
-                    EZline(),
-                    EzBox(),
-                    Text('Para \nprepod'),
-                  ]),
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-              child: Container(
-                child: Container(
-                  color: Color.fromARGB(255, 178, 34, 34),
-                  width: MediaQuery.of(context).size.width,
-                  height: 150,
-                  child: Column(children: [
-                    EzBox(),
-                    Text('Time $time \nauditoriya'),
-                    EzBox(),
-                    EZline(),
-                    EzBox(),
-                    Text('Para \nprepod'),
-                  ]),
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-              child: Container(
-                child: Container(
-                  color: Color.fromARGB(255, 178, 34, 34),
-                  width: MediaQuery.of(context).size.width,
-                  height: 150,
-                  child: Column(children: [
-                    EzBox(),
-                    Text('Time $time \nauditoriya'),
-                    EzBox(),
-                    EZline(),
-                    EzBox(),
-                    Text('Para \nprepod'),
-                  ]),
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-              child: Container(
-                child: Container(
-                  color: Color.fromARGB(255, 178, 34, 34),
-                  width: MediaQuery.of(context).size.width,
-                  height: 150,
-                  child: Column(children: [
-                    EzBox(),
-                    Text('Time $time \nauditoriya'),
-                    EzBox(),
-                    EZline(),
-                    EzBox(),
-                    Text('Para \nprepod'),
-                  ]),
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-              child: Container(
-                child: Container(
-                  color: Color.fromARGB(255, 178, 34, 34),
-                  width: MediaQuery.of(context).size.width,
-                  height: 150,
-                  child: Column(children: [
-                    EzBox(),
-                    Text('Time $time \nauditoriya'),
-                    EzBox(),
-                    EZline(),
-                    EzBox(),
-                    Text('Para \nprepod'),
-                  ]),
-                ),
-              ),
-            ),
-          ])),
+      child: Subjects(),
     ));
   }
 }
