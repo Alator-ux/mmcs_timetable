@@ -24,6 +24,7 @@ class Subjects extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
+      key: PageStorageKey<String>('DayPageScrollingPosition'),
       children: lessons.map((Lesson lesson) {
         return Padding(
           padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
