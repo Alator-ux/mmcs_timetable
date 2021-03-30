@@ -8,57 +8,11 @@ class EntryPage extends StatefulWidget {
 }
 
 class _EntryPageState extends State<EntryPage> {
-  final List<DropdownMenuItem<String>> _courses = courseItems();
-  final List<DropdownMenuItem<String>> _groups = groupItems();
-  var _course = getCourses()[0];
-  var _group = getGroups()[0];
-  final TextStyle _textStyle = TextStyle(color: Colors.black, fontSize: 22);
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Курс:", style: _textStyle),
-              DropdownButton<String>(
-                items: _courses,
-                onChanged: (value) {
-                  setState(() {
-                    _course = value;
-                  });
-                },
-                value: _course,
-                style: _textStyle,
-                isDense: true,
-                iconSize: 35.0,
-              ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Группа:", style: _textStyle),
-              DropdownButton<String>(
-                items: _groups,
-                onChanged: (value) {
-                  setState(() {
-                    _group = value;
-                  });
-                },
-                value: _group,
-                style: _textStyle,
-                isDense: true,
-                iconSize: 35.0,
-              ),
-            ],
-          ),
-        ),
+        InformationCard(),
         SizedBox(height: 20),
         RaisedButton(
           color: Colors.grey[200],
@@ -70,8 +24,75 @@ class _EntryPageState extends State<EntryPage> {
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => DayPage()));
           },
-        )
+        ),
       ],
+    );
+  }
+}
+
+class InformationCard extends StatefulWidget {
+  @override
+  _InformationCardState createState() => _InformationCardState();
+}
+
+class _InformationCardState extends State<InformationCard> {
+  final List<DropdownMenuItem<String>> _courses = courseItems();
+  final List<DropdownMenuItem<String>> _groups = groupItems();
+  var _course = getCourses()[0];
+  var _group = getGroups()[0];
+  final TextStyle _textStyle = TextStyle(color: Colors.black, fontSize: 22);
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      shadowColor: Colors.cyan[400],
+      elevation: 6,
+      margin: EdgeInsets.fromLTRB(15, 15, 15, 0),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Курс:", style: _textStyle),
+                DropdownButton<String>(
+                  items: _courses,
+                  onChanged: (value) {
+                    setState(() {
+                      _course = value;
+                    });
+                  },
+                  value: _course,
+                  style: _textStyle,
+                  isDense: true,
+                  iconSize: 35.0,
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Группа:", style: _textStyle),
+                DropdownButton<String>(
+                  items: _groups,
+                  onChanged: (value) {
+                    setState(() {
+                      _group = value;
+                    });
+                  },
+                  value: _group,
+                  style: _textStyle,
+                  isDense: true,
+                  iconSize: 35.0,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
