@@ -38,8 +38,10 @@ class InformationCard extends StatefulWidget {
 class _InformationCardState extends State<InformationCard> {
   final List<DropdownMenuItem<String>> _courses = courseItems();
   final List<DropdownMenuItem<String>> _groups = groupItems();
+  final List<DropdownMenuItem<String>> _progs = progsItems();
   var _course = getCourses()[0];
   var _group = getGroups()[0];
+  var _prog = getProgs()[0];
   final TextStyle _textStyle = TextStyle(color: Colors.black, fontSize: 22);
   @override
   Widget build(BuildContext context) {
@@ -63,6 +65,27 @@ class _InformationCardState extends State<InformationCard> {
                     });
                   },
                   value: _course,
+                  style: _textStyle,
+                  isDense: true,
+                  iconSize: 35.0,
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Направление:", style: _textStyle),
+                DropdownButton<String>(
+                  items: _progs,
+                  onChanged: (value) {
+                    setState(() {
+                      _prog = value;
+                    });
+                  },
+                  value: _prog,
                   style: _textStyle,
                   isDense: true,
                   iconSize: 35.0,

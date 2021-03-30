@@ -10,10 +10,12 @@ class DayPage extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-          appBar: MyAppBar(),
-          body: PageView(
-            children: [Subjects(), WeekPage()],
-          )),
+        appBar: MyAppBar(),
+        body: PageView(
+          children: [Subjects(), WeekPage()],
+        ),
+        //bottomNavigationBar: , TODO
+      ),
     );
   }
 }

@@ -28,6 +28,16 @@ List<DropdownMenuItem<String>> groupItems() {
   }).toList();
 }
 
+List<DropdownMenuItem<String>> progsItems() {
+  final progs = getProgs();
+  return progs.map((String value) {
+    return DropdownMenuItem<String>(
+      value: value,
+      child: Text(value),
+    );
+  }).toList();
+}
+
 List<String> getCourses() {
   final list = List<String>();
   for (int i = 1; i < 6; i++) {
@@ -46,7 +56,12 @@ List<String> getCourses() {
   return list;
 }
 
+List<String> getProgs() {
+  List<String> list = ["ПМИ", "ФИИТ"];
+  return list;
+}
+
 List<String> getGroups() {
-  List<String> list = ["1", "2", "3"];
+  List<String> list = ["1", "2", "3", "4"];
   return list;
 }
