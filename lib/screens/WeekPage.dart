@@ -14,39 +14,60 @@ class WeekPageState extends State<WeekPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: ListView.separated(
+            key: PageStorageKey<String>('WeekPageScrollingPosition'),
             itemCount: week.length,
-            separatorBuilder: (context, index) => Divider(),
+            separatorBuilder: (context, index) => SizedBox(height: 10),
             itemBuilder: (BuildContext context, int index) {
-              return Theme(
-                data: ThemeData(
-                  accentColor: Colors.black,
-                ),
-                child: ExpansionTile(
-                  title: Text(
-                    DaysOfWeek.values[index].asString(),
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-                  children: week[index].lessons.map((Lesson lesson) {
-                    return Container(
-                      height: 70,
-                      child: Card(
-                        child: Container(
+              return //Theme(
+                  // data: ThemeData(
+                  //   accentColor: Colors.black,
+
+                  // ),
+                  Card(
+                // shadowColor: Colors.cyan[100],
+                // elevation: 10,
+                margin: EdgeInsets.all(10),
+                child: ListTileTheme(
+                  tileColor: Colors.cyan[50],
+                  selectedColor: Colors.black,
+                  child: ExpansionTile(
+                    childrenPadding: EdgeInsets.symmetric(horizontal: 10),
+                    key:
+                        PageStorageKey<String>('lessonCard' + index.toString()),
+
+                    ///дабы вкладки оставались открытыми
+                    title: Text(
+                      DaysOfWeek.values[index].asString(),
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18),
+                    ),
+
+                    children: week[index].lessons.map((Lesson lesson) {
+                      return Container(
+                        height: 70,
+                        padding: const EdgeInsets.all(4.0),
+                        child: Card(
                           color: Colors.cyan[50],
-                          child: Row(children: [
-                            Text(
-                              lesson.time.asString(),
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            SizedBox(width: 20),
-                            Text(
-                              lesson.subject,
-                              style: TextStyle(fontSize: 17),
-                            ),
-                          ]),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(children: [
+                              Text(
+                                lesson.time.asString(),
+                                style: TextStyle(fontSize: 20),
+                              ),
+                              SizedBox(width: 20),
+                              Text(
+                                lesson.subject,
+                                style: TextStyle(fontSize: 17),
+                              ),
+                            ]),
+                          ),
                         ),
-                      ),
-                    );
-                  }).toList(),
+                      );
+                    }).toList(),
+                  ),
                 ),
               );
             }));
