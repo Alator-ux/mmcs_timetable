@@ -1,8 +1,6 @@
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart';
 import 'package:schedule/schedule/classes/import_classes.dart';
-import 'package:schedule/schedule/classes/schedule/schedule.dart';
-import 'package:schedule/schedule/classes/subject/subject.dart';
 
 part 'api_service.g.dart';
 
