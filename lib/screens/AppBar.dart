@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:schedule/screens/EntryPage.dart';
 
-//сам эппбар
+//сам эппбар без секции с помощью
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(50);
   @override
@@ -9,8 +11,34 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
       backgroundColor: Colors.cyan[500],
       centerTitle: true,
       title: Text('MMCS_TimeTable'),
+    );
+  }
+}
+
+//сам эппбар c секцeй с помощью
+class MyAppBarHelp extends StatelessWidget implements PreferredSizeWidget {
+  Size get preferredSize => const Size.fromHeight(50);
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.cyan[500],
+      centerTitle: true,
+      title: Text('MMCS_TimeTable'),
+      leading: FlatButton(
+        highlightColor: Colors.transparent,
+        onPressed: () => Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (BuildContext context) =>
+                    Scaffold(appBar: MyAppBar(), body: EntryPage()))),
+        child: Icon(
+          Icons.arrow_back,
+          color: Colors.white,
+        ),
+      ),
       actions: [
         FlatButton(
+          padding: EdgeInsets.symmetric(),
           highlightColor: Colors.transparent,
           onPressed: () {
             showDialog<void>(
