@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+          bottomNavigationBar: MyBottomBar(),
           appBar: MyAppBar(),
           body:
               // TODO: Call other page

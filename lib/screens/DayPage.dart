@@ -14,7 +14,7 @@ class DayPage extends StatelessWidget {
         body: PageView(
           children: [Subjects(), WeekPage()],
         ),
-        //bottomNavigationBar: , TODO
+        bottomNavigationBar: MyBottomBar(),
       ),
     );
   }

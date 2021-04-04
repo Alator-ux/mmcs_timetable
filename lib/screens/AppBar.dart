@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:schedule/screens/EntryPage.dart';
+import 'package:intl/intl.dart';
 
 //сам эппбар без секции с помощью
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -68,6 +69,23 @@ class HelpDialog extends StatelessWidget {
           child: Text('OK'),
         ),
       ],
+    );
+  }
+}
+
+//боттом бар
+class MyBottomBar extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final DateTime now = DateTime.now();
+    final DateFormat formatter = DateFormat('dd-MM-yyy');
+    final String formatted = formatter.format(now);
+    return BottomAppBar(
+      color: Colors.cyan[500],
+      child: Text(
+        formatted,
+        textAlign: TextAlign.center,
+      ),
     );
   }
 }

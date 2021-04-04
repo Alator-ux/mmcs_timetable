@@ -46,30 +46,59 @@ class WeekPageState extends State<WeekPage> {
 
                     children: week[index].lessons.map((Lesson lesson) {
                       return Container(
-                        height: 70,
-                        padding: const EdgeInsets.all(4.0),
-                        child: Card(
-                          color: Colors.cyan[50],
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(children: [
-                              Text(
-                                lesson.time.asString(),
-                                style: TextStyle(fontSize: 20),
-                              ),
-                              SizedBox(width: 20),
-                              Text(
-                                lesson.subject,
-                                style: TextStyle(fontSize: 17),
-                              ),
-                            ]),
-                          ),
-                        ),
-                      );
+                          height: 70,
+                          padding: const EdgeInsets.all(4.0),
+                          child: Card(
+                              color: Colors.cyan[50],
+                              child: FlatButton(
+                                onPressed: () {
+                                  showDialog<void>(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                              title: Text(lesson.subject),
+                                              content: Row(
+                                                children: [
+                                                  Text("Время: " +
+                                                      lesson.time.asString() +
+                                                      "\n" +
+                                                      "Аудитория: " +
+                                                      lesson.room +
+                                                      "\n" +
+                                                      "Преподаватель: " +
+                                                      lesson.teacherName),
+                                                ],
+                                              ),
+                                              actions: [
+                                                FlatButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                  child: Text('OK'),
+                                                ),
+                                              ]));
+                                },
+                                child: Row(children: [
+                                  Text(
+                                    lesson.time.asString(),
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                  SizedBox(width: 20),
+                                  Text(
+                                    lesson.subject,
+                                    style: TextStyle(fontSize: 17),
+                                  ),
+                                ]),
+                              )));
                     }).toList(),
                   ),
                 ),
               );
             }));
+  }
+}
+
+class LessonInfo extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog();
   }
 }
