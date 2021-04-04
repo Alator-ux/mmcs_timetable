@@ -3,7 +3,7 @@ import 'package:schedule/schedule/classes/lesson.dart';
 import 'day.dart';
 import 'enums.dart';
 
-import '../test values/test_values.dart';
+import '../test_values/test_values.dart';
 
 class Week {
   List<Day> _days;

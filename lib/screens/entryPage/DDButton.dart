@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:schedule/schedule/classes/import_classes.dart';
-import 'package:schedule/schedule/test%20values/test_values.dart';
+import 'package:schedule/schedule/test_values/test_values.dart';
 
 class FirstDropDownButton extends StatefulWidget {
   final Stream<List<Grade>> _apiStream;
