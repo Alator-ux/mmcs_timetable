@@ -2,14 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:schedule/schedule/classes/import_classes.dart';
-
-const List<String> timesForTest = [
-  "08:00-09:20",
-  "09:50-11:20",
-  "11:55-13:30",
-  "13:45-15:20",
-  "15:45-17:20"
-];
+import 'package:schedule/screens/entryPage/EntryPageProvider.dart';
 
 class Pair<FT, ST> {
   final FT first;
@@ -18,8 +11,8 @@ class Pair<FT, ST> {
   Pair(this.first, this.second);
 }
 
-List<DropdownMenuItem<Grade>> gradeItems(List<Grade> grades) {
-  if (grades.length == 0) {
+List<DropdownMenuItem<Grade>> gradeItems(EntryPageProvider provider) {
+  if (provider.canNotShowGrades) {
     return [
       DropdownMenuItem<Grade>(
         value: Grade(id: 0, n: 0, degree: '-'),
@@ -27,6 +20,8 @@ List<DropdownMenuItem<Grade>> gradeItems(List<Grade> grades) {
       )
     ];
   }
+
+  List<Grade> grades = provider.grades;
 
   return grades.map((Grade grade) {
     return DropdownMenuItem<Grade>(
@@ -37,9 +32,8 @@ List<DropdownMenuItem<Grade>> gradeItems(List<Grade> grades) {
   }).toList();
 }
 
-List<DropdownMenuItem<String>> progItems(
-    List<List<Group>> allGroups, int gradeID) {
-  if (allGroups.length == 0 || allGroups.first.first.id == 0) {
+List<DropdownMenuItem<String>> progItems(EntryPageProvider provider) {
+  if (provider.canNotShowGroups) {
     return [
       DropdownMenuItem<String>(
         value: '0',
@@ -48,10 +42,7 @@ List<DropdownMenuItem<String>> progItems(
     ];
   }
 
-  var groups = allGroups
-      .firstWhere((listOfGroup) => listOfGroup.first.gradeid == gradeID);
-  var progs = groups.map((group) => group.name.toString()).toSet();
-  // print('groups len ' + groups.length.toString());
+  var progs = provider.currentGroupNames;
 
   return progs.map((name) {
     return DropdownMenuItem<String>(
@@ -61,9 +52,8 @@ List<DropdownMenuItem<String>> progItems(
   }).toList();
 }
 
-List<DropdownMenuItem<Group>> groupItems(
-    List<List<Group>> allGroups, int gradeID, String progName) {
-  if (allGroups.length == 0 || allGroups.first.first.id == 0) {
+List<DropdownMenuItem<Group>> groupItems(EntryPageProvider provider) {
+  if (provider.canNotShowGroups) {
     return [
       DropdownMenuItem<Group>(
         value: Group(id: 0, n: 0, gradeid: 0, name: '-'),
@@ -72,12 +62,8 @@ List<DropdownMenuItem<Group>> groupItems(
     ];
   }
 
-  var groups = allGroups
-      .firstWhere((listOfGroup) => listOfGroup.first.gradeid == gradeID);
-  // print('groups len ' + groups.length.toString());
-  // print(progName);
-  var res = groups.where((group) => group.name == progName);
-  // print('res len ' + res.length.toString());
+  var res = provider.currentGroups;
+
   return res.map((Group group) {
     return DropdownMenuItem<Group>(
       value: group,

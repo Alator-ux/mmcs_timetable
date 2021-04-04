@@ -3,57 +3,40 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:schedule/schedule/classes/import_classes.dart';
 import 'package:schedule/schedule/test_values/test_values.dart';
+import 'package:provider/provider.dart';
+import 'EntryPageProvider.dart';
 
 class FirstDropDownButton extends StatefulWidget {
-  final Stream<List<Grade>> _apiStream;
-  final StreamController<int> _controller;
-  final List<Grade> _grades;
   final TextStyle _textStyle;
-  FirstDropDownButton(
-      this._grades, this._textStyle, this._controller, this._apiStream);
+  FirstDropDownButton(this._textStyle);
   @override
-  _FirstDropDownButtonState createState() =>
-      _FirstDropDownButtonState(_grades, _textStyle, _controller);
-
-  static Grade getGrade() {
-    return _FirstDropDownButtonState._grade;
-  }
-
-  static int getGradeID() {
-    return _FirstDropDownButtonState._gradeID;
-  }
+  _FirstDropDownButtonState createState() => _FirstDropDownButtonState();
 }
 
 class _FirstDropDownButtonState extends State<FirstDropDownButton> {
-  final StreamController<int> _controller;
-  final TextStyle _textStyle;
-  List<Grade> _grades;
+  EntryPageProvider provider;
+  // TextStyle _textStyle;
   List<DropdownMenuItem<Grade>> _gradeItems;
-  static Grade _grade;
-  static int _gradeID = 1;
-  _FirstDropDownButtonState(this._grades, this._textStyle, this._controller) {
-    _gradeItems = gradeItems(_grades);
-    _grade = _gradeItems.first.value;
-    _gradeID = _grade.id;
+  Grade _grade;
+  bool flag = false;
+
+  _FirstDropDownButtonState() {
+    // _textStyle = widget._textStyle;
   }
 
-  void _updateByApi(List<Grade> gradelist) {
-    setState(() {
-      // print(_gradeID);
-      _grades = gradelist;
-      _gradeID = gradelist.first.id;
-      _gradeItems = gradeItems(_grades);
+  void _update(List<Grade> gradelist) {
+    _gradeItems = gradeItems(provider);
+    if (!flag) {
       _grade = _gradeItems.first.value;
-      _controller.add(_gradeID);
-    });
+    }
+    // provider.changeGradeID(provider.grades.first.id);
   }
 
   @override
-  void initState() {
-    super.initState();
-    widget._apiStream.listen((gradelist) {
-      _updateByApi(gradelist);
-    });
+  void didChangeDependencies() {
+    provider = Provider.of<EntryPageProvider>(context);
+    _update(provider.grades);
+    super.didChangeDependencies();
   }
 
   @override
@@ -61,14 +44,16 @@ class _FirstDropDownButtonState extends State<FirstDropDownButton> {
     return DropdownButton<Grade>(
       items: _gradeItems,
       onChanged: (value) {
-        _controller.add(value.id);
-        setState(() {
-          _grade = value;
-          _gradeID = value.id;
-        });
+        // setState(
+        // () {
+        _grade = value;
+        flag = true;
+        provider.changeGradeID(value.id);
+        // },
+        // );
       },
       value: _grade,
-      style: _textStyle,
+      style: widget._textStyle,
       isDense: true,
       iconSize: 35.0,
     );
@@ -78,57 +63,37 @@ class _FirstDropDownButtonState extends State<FirstDropDownButton> {
 //------------------------------------------------//
 
 class SecondDropDownButton extends StatefulWidget {
-  final Stream<List<List<Group>>> apiStream;
-  final Stream<int> stream;
-  final StreamController<String> _controller;
-  final List<List<Group>> _groups;
   final TextStyle _textStyle;
-  SecondDropDownButton(this._groups, this._textStyle, this.stream,
-      this._controller, this.apiStream);
+  const SecondDropDownButton(this._textStyle);
   @override
-  _SecondDropDownButtonState createState() =>
-      _SecondDropDownButtonState(_groups, _textStyle, _controller);
-
-  static String getProg() {
-    return _SecondDropDownButtonState._prog;
-  }
+  _SecondDropDownButtonState createState() => _SecondDropDownButtonState();
 }
 
 class _SecondDropDownButtonState extends State<SecondDropDownButton> {
-  final TextStyle _textStyle;
-  final StreamController<String> _controller;
-  List<List<Group>> _groups;
+  EntryPageProvider provider;
+  // TextStyle _textStyle;
+  // List<List<Group>> _groups;
   List<DropdownMenuItem<String>> _progItems;
-  static String _prog;
-  int _gradeID = FirstDropDownButton.getGradeID();
-  _SecondDropDownButtonState(this._groups, this._textStyle, this._controller) {
-    _progItems = progItems(_groups, _gradeID);
-    _prog = _progItems.first.value;
-  }
+  String _prog = '-';
+  int oldid = 0;
+  bool flag = false;
+  _SecondDropDownButtonState();
 
-  void _updateByApi(List<List<Group>> groups) {
-    _groups = groups;
-    _updateProg(_groups.first.first.gradeid);
-  }
-
-  void _updateProg(int gradeID) {
-    setState(() {
-      _gradeID = gradeID;
-      _progItems = progItems(_groups, _gradeID);
+  void _update(int gradeID) {
+    int id = provider.currentGradeID;
+    _progItems = progItems(provider);
+    if (!flag || id != oldid) {
       _prog = _progItems.first.value;
-      _controller.add(_prog);
-    });
+      oldid = id;
+      // provider.currentProgName = _prog;
+    }
   }
 
   @override
-  void initState() {
-    super.initState();
-    widget.apiStream.listen((grouplists) {
-      _updateByApi(grouplists);
-    });
-    widget.stream.listen((gradeid) {
-      _updateProg(gradeid);
-    });
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    provider = Provider.of<EntryPageProvider>(context);
+    _update(provider.currentGradeID);
   }
 
   @override
@@ -136,13 +101,14 @@ class _SecondDropDownButtonState extends State<SecondDropDownButton> {
     return DropdownButton<String>(
       items: _progItems,
       onChanged: (value) {
-        _controller.add(value);
-        setState(() {
-          _prog = value;
-        });
+        // setState(() {
+        _prog = value;
+        flag = true;
+        provider.changeProgName(value);
+        // });
       },
       value: _prog,
-      style: _textStyle,
+      style: widget._textStyle,
       isDense: true,
       iconSize: 35.0,
     );
@@ -150,71 +116,58 @@ class _SecondDropDownButtonState extends State<SecondDropDownButton> {
 }
 
 class ThirdDropDowButton extends StatefulWidget {
-  final Stream<List<List<Group>>> apiStream;
-  final Stream<String> stream;
-  final List<List<Group>> _groups;
   final TextStyle _textStyle;
 
-  ThirdDropDowButton(
-      this._groups, this._textStyle, this.stream, this.apiStream);
+  const ThirdDropDowButton(this._textStyle);
 
   @override
-  _ThirdDropDowButtonState createState() =>
-      _ThirdDropDowButtonState(_groups, _textStyle);
-
-  static Group getGrade() {
-    return _ThirdDropDowButtonState._group;
-  }
+  _ThirdDropDowButtonState createState() => _ThirdDropDowButtonState();
 }
 
 class _ThirdDropDowButtonState extends State<ThirdDropDowButton> {
-  final TextStyle _textStyle;
+  EntryPageProvider provider;
+  // TextStyle _textStyle;
   List<DropdownMenuItem<Group>> _groupItems;
-  List<List<Group>> _groups;
-  static Group _group;
-  int _gradeID = FirstDropDownButton.getGradeID();
-  String _progName = SecondDropDownButton.getProg();
-
-  _ThirdDropDowButtonState(this._groups, this._textStyle) {
-    _groupItems = groupItems(_groups, _gradeID, _progName);
-    _group = _groupItems.first.value;
+  // List<List<Group>> _groups;
+  Group _group;
+  bool flag = false;
+  int id = 0;
+  String progName;
+  _ThirdDropDowButtonState() {
+    // _textStyle = widget._textStyle;
   }
 
-  void _updateByApi(List<List<Group>> groups) {
-    _groups = groups;
-  }
-
-  void _updateGrade(String progName) {
-    setState(() {
-      _gradeID = FirstDropDownButton.getGradeID();
-      _groupItems = groupItems(_groups, _gradeID, progName);
+  void _update(String newProgName) {
+    // _groups = provider.allgroups;
+    int newid = provider.currentGradeID;
+    _groupItems = groupItems(provider);
+    if (!flag || newid != id || newProgName != progName) {
       _group = _groupItems.first.value;
-    });
+      id = newid;
+      progName = newProgName;
+    }
   }
 
   @override
-  void initState() {
-    super.initState();
-    widget.apiStream.listen((grouplists) {
-      _updateByApi(grouplists);
-    });
-    widget.stream.listen((progName) {
-      _updateGrade(progName);
-    });
+  void didChangeDependencies() {
+    provider = Provider.of<EntryPageProvider>(context);
+    _update(provider.currentProgName);
+    super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_group == null) _group = _groupItems.first.value;
     return DropdownButton<Group>(
       items: _groupItems,
       onChanged: (value) {
-        setState(() {
-          _group = value;
-        });
+        // setState(() {
+        _group = value;
+        flag = true;
+        provider.changeGroup(value);
+        // });
       },
       value: _group,
-      style: _textStyle,
+      style: widget._textStyle,
       isDense: true,
       iconSize: 35.0,
     );
