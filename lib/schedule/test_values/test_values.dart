@@ -39,8 +39,6 @@ List<DropdownMenuItem<Grade>> gradeItems(List<Grade> grades) {
 
 List<DropdownMenuItem<String>> progItems(
     List<List<Group>> allGroups, int gradeID) {
-  print(gradeID);
-  print(allGroups.length);
   if (allGroups.length == 0 || allGroups.first.first.id == 0) {
     return [
       DropdownMenuItem<String>(

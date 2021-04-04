@@ -12,36 +12,17 @@ class EntryPage extends StatefulWidget {
 }
 
 class _EntryPageState extends State<EntryPage> {
-  final api = RestClient.create();
-
   final StreamController<List<Grade>> _apiGradeController =
       StreamController<List<Grade>>();
 
   final StreamController<List<List<Group>>> _apiGroupController =
       StreamController<List<List<Group>>>.broadcast();
 
-  List<Grade> _grades = [];
-
-  List<List<Group>> _groups = [];
-
   @override
   void dispose() {
     super.dispose();
     _apiGradeController.close();
     _apiGroupController.close();
-  }
-
-  Future<int> fillGrades() async {
-    _grades = await api.getGrades();
-    _grades.forEach(
-      (grade) async {
-        var groups = await api.getGroups(grade.id);
-        _groups.add(groups);
-      },
-    );
-    _apiGroupController.add(_groups);
-    _apiGradeController.add(_grades);
-    return 1;
   }
 
   @override
