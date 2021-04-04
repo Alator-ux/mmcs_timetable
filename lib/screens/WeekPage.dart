@@ -54,27 +54,7 @@ class WeekPageState extends State<WeekPage> {
                                 onPressed: () {
                                   showDialog<void>(
                                       context: context,
-                                      builder: (context) => AlertDialog(
-                                              title: Text(lesson.subject),
-                                              content: Row(
-                                                children: [
-                                                  Text("Время: " +
-                                                      lesson.time.asString() +
-                                                      "\n" +
-                                                      "Аудитория: " +
-                                                      lesson.room +
-                                                      "\n" +
-                                                      "Преподаватель: " +
-                                                      lesson.teacherName),
-                                                ],
-                                              ),
-                                              actions: [
-                                                FlatButton(
-                                                  onPressed: () =>
-                                                      Navigator.pop(context),
-                                                  child: Text('OK'),
-                                                ),
-                                              ]));
+                                      builder: (context) => lessonInfo(lesson));
                                 },
                                 child: Row(children: [
                                   Text(
@@ -96,9 +76,20 @@ class WeekPageState extends State<WeekPage> {
   }
 }
 
-class LessonInfo extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog();
-  }
+AlertDialog lessonInfo(Lesson lesson) {
+  return AlertDialog(
+    title: Text(lesson.subject),
+    content: Row(
+      children: [
+        Text("Время: " +
+            lesson.time.asString() +
+            "\n" +
+            "Аудитория: " +
+            lesson.room +
+            "\n" +
+            "Преподаватель: " +
+            lesson.teacherName),
+      ],
+    ),
+  );
 }
