@@ -17,7 +17,7 @@ class Week {
   }
   List<Day> get days => _days;
 
-  Week.testConstructor() {
+  /*Week.testConstructor() {
     // String tw;
     // if (tweek == TypeWeek.lower)
     //   tw = "нижней недели";
@@ -36,7 +36,7 @@ class Week {
       var d = Day(d: DaysOfWeek.values[i], lessons: lessons);
       this._days.add(d);
     }
-  }
+  }*/
   //set days() {
 //
 //}

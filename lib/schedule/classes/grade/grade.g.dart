@@ -9,13 +9,13 @@ part of 'grade.dart';
 Grade _$GradeFromJson(Map<String, dynamic> json) {
   return Grade(
     id: json['id'] as int,
-    n: json['n'] as int,
+    n: json['num'] as int,
     degree: json['degree'] as String,
   );
 }
 
 Map<String, dynamic> _$GradeToJson(Grade instance) => <String, dynamic>{
       'id': instance.id,
-      'n': instance.n,
+      'num': instance.n,
       'degree': instance.degree,
     };

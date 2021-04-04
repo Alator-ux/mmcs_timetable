@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:schedule/schedule/classes/curricula/curricula.dart';
-import '../lesson/lesson.dart';
+import '../lesson.dart';
 
 part 'schedule.g.dart';
 
