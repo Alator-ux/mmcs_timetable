@@ -1,5 +1,4 @@
-import 'package:json_annotation/json_annotation.dart';
-import 'time.dart';
+import '../time.dart';
 // import 'package:flutter/cupertino.dart';
 
 //@JsonSerializable()
