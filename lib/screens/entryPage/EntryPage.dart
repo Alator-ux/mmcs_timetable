@@ -12,8 +12,10 @@ class EntryPage extends StatefulWidget {
 }
 
 class _EntryPageState extends State<EntryPage> {
+  EntryPageProvider provider;
   @override
   Widget build(BuildContext context) {
+    provider = Provider.of<EntryPageProvider>(context);
     return Column(
       children: [
         InformationCard(),
@@ -26,7 +28,7 @@ class _EntryPageState extends State<EntryPage> {
           ),
           onPressed: () {
             // Navigator.push(
-            //     context, MaterialPageRoute(builder: (context) => DayPage(InformationCard.getGroup())));
+            // context, MaterialPageRoute(builder: (context) => DayPage(provider.currentGroup)));
           },
         ),
       ],
