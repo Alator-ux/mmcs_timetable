@@ -53,9 +53,10 @@ class _FirstDropDownButtonState extends State<FirstDropDownButton> {
         // );
       },
       value: _grade,
-      style: widget._textStyle,
+      // style: _textStyle,
       isDense: true,
       iconSize: 35.0,
+      isExpanded: true,
     );
   }
 }
@@ -108,9 +109,10 @@ class _SecondDropDownButtonState extends State<SecondDropDownButton> {
         // });
       },
       value: _prog,
-      style: widget._textStyle,
+      // style: widget._textStyle,
       isDense: true,
       iconSize: 35.0,
+      isExpanded: true,
     );
   }
 }
@@ -167,9 +169,10 @@ class _ThirdDropDowButtonState extends State<ThirdDropDowButton> {
         // });
       },
       value: _group,
-      style: widget._textStyle,
+      // style: widget._textStyle,
       isDense: true,
       iconSize: 35.0,
+      isExpanded: true,
     );
   }
 }

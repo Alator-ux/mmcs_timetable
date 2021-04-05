@@ -1,21 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:schedule/api/api_service.dart';
 import 'package:schedule/schedule/classes/import_classes.dart';
-import 'EntryPageProvider.dart';
+import 'package:schedule/schedule/classes/week.dart';
 
 class EntryPageProvider with ChangeNotifier {
   final api = RestClient.create();
+  bool dbFilled = true;
   int currentGradeID = 0;
   String currentProgName = '-';
   Group currentGroup = Group(gradeid: 0, id: 0, n: 0, name: '-');
   List<Grade> grades = [];
   List<List<Group>> allgroups = [];
+  Map<int, Schedule> schedules = Map<int, Schedule>();
+  int currentWeek = 0;
 
   EntryPageProvider() {
     fillGrades();
   }
 
   Future<void> fillGrades() async {
+    dbFilled = false;
     grades = await api.getGrades();
     await Future.forEach(
       grades,
@@ -24,12 +28,46 @@ class EntryPageProvider with ChangeNotifier {
         allgroups.add(groups);
       },
     );
+
     currentGradeID = grades.first.id;
     currentProgName = allgroups.first
         .where((group) => group.gradeid == currentGradeID)
         .first
         .name;
+
     notifyListeners();
+
+    await Future.forEach(
+      allgroups,
+      (groups) async {
+        await Future.forEach(
+          groups,
+          (group) async {
+            int id = group.id;
+            var schedule = await api.getSchedule(id);
+            schedules[id] = schedule;
+          },
+        );
+      },
+    );
+
+    // currentWeek = await api.
+    fillDB();
+  }
+
+  Future<void> fillDB() async {
+    //TODO записать в бд
+    dbFilled = true;
+    notifyListeners();
+  }
+
+  List<Week> get currentSchedule {
+    List<Week> weeks = [];
+    var week = Week(schedules[currentGradeID], 'lower');
+    weeks.add(week);
+    week = Week(schedules[currentGradeID], 'upper');
+    weeks.add(week);
+    return weeks;
   }
 
   void changeGradeID(int newid) {
@@ -42,15 +80,16 @@ class EntryPageProvider with ChangeNotifier {
     // currentGroup = allgroups
     //     .firstWhere((grade) => grade.first.name == currentProgName)
     //     .first;
-    notifyListeners();
+    // notifyListeners();
   }
 
   void changeProgName(String progName) {
     currentProgName = progName;
-    currentGroup = allgroups
+    var group = allgroups
         .firstWhere((grade) => grade.any((gr) => gr.name == currentProgName))
         .first;
-    notifyListeners();
+    changeGroup(group);
+    // notifyListeners();
   }
 
   void changeGroup(Group group) {
@@ -82,5 +121,9 @@ class EntryPageProvider with ChangeNotifier {
 
   bool get canNotShowGroups {
     return allgroups.isEmpty || allgroups.first.first.id == 0;
+  }
+
+  bool get canNotGetSchedule {
+    return schedules.isEmpty || !dbFilled;
   }
 }

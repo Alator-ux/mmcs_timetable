@@ -26,8 +26,13 @@ List<DropdownMenuItem<Grade>> gradeItems(EntryPageProvider provider) {
   return grades.map((Grade grade) {
     return DropdownMenuItem<Grade>(
       value: grade,
-      child: Text(
-          degreeFromString(grade.degree) + ' ' + grade.n.toString() + ' курс'),
+      child: FittedBox(
+        fit: BoxFit.fill,
+        child: Text(
+          degreeFromString(grade.degree) + ' ' + grade.n.toString() + ' курс',
+          textAlign: TextAlign.center,
+        ),
+      ),
     );
   }).toList();
 }
@@ -47,7 +52,14 @@ List<DropdownMenuItem<String>> progItems(EntryPageProvider provider) {
   return progs.map((name) {
     return DropdownMenuItem<String>(
       value: name,
-      child: Text(name.trim()),
+      child: FittedBox(
+        fit: BoxFit.fill,
+        child: Text(
+          name,
+          textAlign: TextAlign.center,
+          // overflow: TextOverflow.ellipsis,
+        ),
+      ),
     );
   }).toList();
 }
@@ -67,7 +79,13 @@ List<DropdownMenuItem<Group>> groupItems(EntryPageProvider provider) {
   return res.map((Group group) {
     return DropdownMenuItem<Group>(
       value: group,
-      child: Text(group.n.toString()),
+      child: FittedBox(
+        fit: BoxFit.fill,
+        child: Text(
+          group.n.toString(),
+          // textAlign: TextAlign.center,
+        ),
+      ),
     );
   }).toList();
 }
