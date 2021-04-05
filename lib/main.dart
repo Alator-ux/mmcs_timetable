@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:schedule/API/api_service.dart';
+import 'package:schedule/schedule/classes/lesson/lesson.dart';
+import 'package:schedule/screens/entryPage/EntryPageProvider.dart';
 // import 'schedule/classes/week.dart';
-// import 'dart:io' as io;
-import 'screens/EntryPage.dart';
+import 'screens/entryPage/EntryPage.dart';
 import 'screens/AppBar.dart';
 
 void main() => runApp(MyApp());
@@ -9,15 +12,19 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-          bottomNavigationBar: MyBottomBar(),
+    return Provider(
+      create: (context) => RestClient.create(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
           appBar: MyAppBar(),
-          body:
-              // TODO: Call other page
-              //io.File("preference.json").existsSync() ? EntryPage() : EntryPage(),
-              EntryPage()),
+          backgroundColor: Colors.white,
+          body: ChangeNotifierProvider(
+            create: (context) => EntryPageProvider(),
+            child: EntryPage(),
+          ),
+        ),
+      ),
     );
   }
 }
