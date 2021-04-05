@@ -1,3 +1,5 @@
+import 'package:schedule/schedule/classes/enums.dart';
+
 import '../time.dart';
 // import 'package:flutter/cupertino.dart';
 
@@ -6,7 +8,9 @@ class Lesson {
   int id;
   int uberid;
   IntervalOfTime time;
-  Lesson({this.time, this.id, this.uberid});
+  int day;
+  String typeOfWeek;
+  Lesson({this.time, this.day, this.id, this.uberid, this.typeOfWeek});
 
   // Lesson.withTimeFromString(
   //     {@required String time, @required int id, @required int uberid}) {
@@ -22,13 +26,17 @@ class Lesson {
     String jsonTime = json['timeslot'];
     String begin = jsonTime.substring(3, 8);
     String end = jsonTime.substring(12, 17);
+    int indOfDay = int.parse(jsonTime[1]);
     print(begin);
     print(end);
     IntervalOfTime _time = IntervalOfTime.fromString(begin, end);
+    String tweek = jsonTime.substring(21, jsonTime.length - 1);
     return Lesson(
       time: _time,
+      day: indOfDay,
       id: json['id'] as int,
       uberid: json['uberid'] as int,
+      typeOfWeek: tweek,
     );
   }
 
@@ -36,20 +44,26 @@ class Lesson {
     String jsonTime = json['time'];
     String begin = jsonTime.substring(0, 4);
     String end = jsonTime.substring(5, 9);
+    int indOfDay = int.parse(jsonTime[1]);
     IntervalOfTime _time = IntervalOfTime.fromString(begin, end);
+    String tweek = jsonTime.substring(21, jsonTime.length - 1);
     return Lesson(
       time: _time,
+      day: indOfDay,
       id: json['id'] as int,
       uberid: json['uberid'] as int,
+      typeOfWeek: tweek,
     );
   }
 
   Map<String, dynamic> toJson() {
     String time = this.time.asString();
     return {
+      'time': time,
+      'day': day,
       'id': id,
       'uberid': uberid,
-      'time': time,
+      'typeOfWeek': typeOfWeek,
     };
   }
   /*IntervalOfTime get time => _time;
