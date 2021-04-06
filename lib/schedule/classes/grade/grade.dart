@@ -1,5 +1,8 @@
+import 'package:json_annotation/json_annotation.dart';
+
 part 'grade.g.dart';
 
+@JsonSerializable()
 class Grade {
   int id;
   int n;
