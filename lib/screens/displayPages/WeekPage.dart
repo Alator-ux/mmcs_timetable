@@ -15,36 +15,34 @@ class WeekPage extends StatelessWidget {
         itemCount: 7,
         separatorBuilder: (context, index) => SizedBox(height: 10),
         itemBuilder: (BuildContext context, int index) {
+          double width = MediaQuery.of(context).size.width;
+          TextStyle _textStyle = TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+              fontSize: width / 20);
           return //Theme(
               // data: ThemeData(
               //   accentColor: Colors.black,
 
               // ),
-              FlatButton(
-            onPressed: () {},
-            onLongPress: () {},
-            child: Card(
-              // shadowColor: Colors.cyan[100],
-              // elevation: 10,
-              margin: EdgeInsets.all(10),
-              child: ListTileTheme(
-                tileColor: Colors.cyan[50],
-                selectedColor: Colors.black,
-                child: ExpansionTile(
-                  childrenPadding: EdgeInsets.symmetric(horizontal: 10),
-                  key: PageStorageKey<String>('lessonCard' + index.toString()),
+              Card(
+            // shadowColor: Colors.cyan[100],
+            // elevation: 10,
+            margin: EdgeInsets.all(10),
+            child: ListTileTheme(
+              tileColor: Colors.cyan[50],
+              selectedColor: Colors.black,
+              child: ExpansionTile(
+                childrenPadding: EdgeInsets.symmetric(horizontal: 10),
+                key: PageStorageKey<String>('lessonCard' + index.toString()),
 
-                  ///дабы вкладки оставались открытыми
-                  title: Text(
-                    DaysOfWeek.values[index].asString(),
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18),
-                  ),
-
-                  children: expansionTileItems(context, index),
+                ///дабы вкладки оставались открытыми
+                title: Text(
+                  DaysOfWeek.values[index].asString(),
+                  style: _textStyle,
                 ),
+
+                children: expansionTileItems(context, index),
               ),
             ),
           );
@@ -55,6 +53,11 @@ class WeekPage extends StatelessWidget {
 }
 
 List<Widget> expansionTileItems(BuildContext context, int index) {
+  double width = MediaQuery.of(context).size.width;
+  TextStyle _textStyle = TextStyle(
+      color: Colors.black, fontWeight: FontWeight.bold, fontSize: width / 25);
+  TextStyle _timeTextStyle = TextStyle(
+      color: Colors.black, fontWeight: FontWeight.bold, fontSize: width / 20);
   SubjectProvider provider = Provider.of<SubjectProvider>(context);
   Day day = provider.dayByDayID(index);
   if (day.isEmpty)
@@ -70,7 +73,7 @@ List<Widget> expansionTileItems(BuildContext context, int index) {
             child: Center(
               child: Text(
                 'В этот день у вас пар нет',
-                style: TextStyle(fontSize: 20),
+                style: _textStyle,
               ),
             ),
           ),
@@ -86,7 +89,7 @@ List<Widget> expansionTileItems(BuildContext context, int index) {
         child: Card(
           color: Colors.cyan[50],
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(6.0),
             child: FlatButton(
               onPressed: () {
                 showDialog<void>(
@@ -96,14 +99,14 @@ List<Widget> expansionTileItems(BuildContext context, int index) {
               child: Row(children: [
                 Text(
                   lesson.time.asString(),
-                  style: TextStyle(fontSize: 20),
+                  style: _textStyle,
                 ),
-                SizedBox(width: 20),
+                SizedBox(width: 10),
                 Text(
                   lesson.subjectabbr.isEmpty
                       ? lesson.subjectname
                       : lesson.subjectabbr,
-                  style: TextStyle(fontSize: 17),
+                  style: _textStyle,
                 ),
               ]),
             ),
@@ -134,17 +137,17 @@ AlertDialog lessonInfo(BuildContext context, int ind, NormalLesson lesson) {
           ],
         ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            FlatButton(
-              child: Text('Изменить'),
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => EditPage(ind, lesson)));
-              },
-            ),
+            // FlatButton(
+            //   child: Text('Изменить'),
+            //   onPressed: () {
+            //     Navigator.push(
+            //         context,
+            //         MaterialPageRoute(
+            //             builder: (context) => EditPage(ind, lesson)));
+            //   },
+            // ),
             FlatButton(
               child: Text('Ок'),
               onPressed: () {

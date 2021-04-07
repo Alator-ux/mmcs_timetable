@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:schedule/connectivity/connectivity_service.dart';
 import 'package:schedule/schedule/classes/import_classes.dart';
 import 'package:schedule/screens/displayPages/DayPage.dart';
+import 'package:schedule/screens/displayPages/subjectProvider.dart';
 import 'package:schedule/screens/entryPage/EntryPageProvider.dart';
 import 'DDButton.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +22,7 @@ class _EntryPageState extends State<EntryPage> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
+    // double width = MediaQuery.of(context).size.width;
     // TextStyle _textStyle = TextStyle(fontSize: width / 25);
     provider = Provider.of<EntryPageProvider>(context);
     return Column(
@@ -45,8 +45,9 @@ class _EntryPageState extends State<EntryPage> {
               );
             } else {
               var value = await provider.getCurrentSchedule();
-              await Navigator.of(context).push(
-                  new MaterialPageRoute(builder: (context) => DayPage(value)));
+              var provider2 = SubjectProvider.first(value);
+              await Navigator.of(context).push(new MaterialPageRoute(
+                  builder: (context) => DayPage(value, provider2)));
             }
           },
         ),

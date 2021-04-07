@@ -4,13 +4,12 @@ import 'package:schedule/schedule/classes/day.dart';
 import 'package:schedule/schedule/classes/week.dart';
 
 class SubjectProvider with ChangeNotifier {
-  final DBProvider db = DBProvider.db;
+  // final DBProvider db = DBProvider.db;
   TextStyle textStyle;
-  static List<Week> weeks;
-  static int dayIDToChange;
-  static int curDay = 2;
-  static int curWeek = 1;
-  // SubjectProvider();
+  List<Week> weeks;
+  int dayIDToChange;
+  int curDay = DateTime.now().weekday - 1;
+  int curWeek = 0;
   SubjectProvider();
   SubjectProvider.first(List<Week> w) {
     weeks = w;
@@ -29,5 +28,7 @@ class SubjectProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void changeScheduleByLessonID(int id) {}
+  String getCurrentWeek() {
+    return curWeek == 0 ? "нижняя неделя" : "верхняя неделя";
+  }
 }

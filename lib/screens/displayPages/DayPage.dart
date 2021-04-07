@@ -9,21 +9,42 @@ import '../appBar/AppBar.dart';
 
 class DayPage extends StatelessWidget {
   List<Week> weeks;
-  DayPage(this.weeks);
+  SubjectProvider provider;
+  DayPage(this.weeks, this.provider);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: MyAppBarHelp(),
-        body: ChangeNotifierProvider(
-          create: (context) => SubjectProvider.first(weeks),
-          child: PageView(
-            children: [Subjects(), WeekPage()],
-          ),
-        ),
-        //bottomNavigationBar: , TODO
+      home: ChangeNotifierProvider.value(
+        value: provider,
+        child: DayPageHelper(),
       ),
+    );
+  }
+}
+
+class DayPageHelper extends StatefulWidget {
+  @override
+  _DayPageHelperState createState() => _DayPageHelperState();
+}
+
+class _DayPageHelperState extends State<DayPageHelper> {
+  SubjectProvider provider;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    provider = Provider.of<SubjectProvider>(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: MyAppBarHelp(),
+      body: PageView(
+        children: [Subjects(), WeekPage()],
+      ),
+      bottomNavigationBar: MyBottomBar(provider.getCurrentWeek()),
     );
   }
 }
@@ -39,13 +60,41 @@ class Subjects extends StatelessWidget {
 }
 
 List<Widget> subjectsInf(BuildContext context) {
+  double width = MediaQuery.of(context).size.width;
+  TextStyle _textStyle = TextStyle(fontSize: width / 25);
+  TextStyle _cardTextStyle = TextStyle(fontSize: width / 25);
   SubjectProvider provider = Provider.of<SubjectProvider>(context);
   Day day = provider.currentDay;
-  if (day.isEmpty) {
+  if (day.normalLessons.length == 0) {
     return [
-      Container(
-        child: Text('Сегодня пар нет'),
-      ),
+      Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.cyan[50],
+              borderRadius: BorderRadius.circular(15),
+            ),
+            width: MediaQuery.of(context).size.width,
+            height: 150,
+            child: Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.cyan[100],
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                width: double.infinity,
+                alignment: Alignment.center,
+                child: Text(
+                  'Сегодня пар нет',
+                  style: TextStyle(
+                      fontSize: width / 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ),
+        ),
+      )
     ];
   }
   return day.normalLessons.map((lesson) {
@@ -68,9 +117,12 @@ List<Widget> subjectsInf(BuildContext context) {
               ),
               width: double.infinity,
               alignment: Alignment.center,
-              child: Text(lesson.subjectabbr.isEmpty
-                  ? lesson.subjectname
-                  : lesson.subjectabbr),
+              child: Text(
+                lesson.subjectabbr.isEmpty
+                    ? lesson.subjectname
+                    : lesson.subjectabbr,
+                style: _textStyle,
+              ),
             ),
           ),
           Expanded(
@@ -88,9 +140,18 @@ List<Widget> subjectsInf(BuildContext context) {
                         Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(lesson.time.beginAsString()),
-                            Text('  -  '),
-                            Text(lesson.time.endAsString()),
+                            Text(
+                              lesson.time.beginAsString(),
+                              style: _textStyle,
+                            ),
+                            Text(
+                              '  -  ',
+                              style: _textStyle,
+                            ),
+                            Text(
+                              lesson.time.endAsString(),
+                              style: _textStyle,
+                            ),
                           ],
                         ),
                         SizedBox(
@@ -113,8 +174,9 @@ List<Widget> subjectsInf(BuildContext context) {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(lesson.teachername),
-                        Text('Аудитория: ' + lesson.roomname),
+                        Text(lesson.teachername, style: _textStyle),
+                        Text('Аудитория: ' + lesson.roomname,
+                            style: _textStyle),
                       ],
                     ),
                   ),
