@@ -15,6 +15,7 @@ import 'package:schedule/schedule/classes/import_classes.dart';
 class DBProvider {
   static final DBProvider db = DBProvider._();
   static Database _database;
+  final String dbname = "schedule101.db";
   DBProvider._();
 
   Future<Database> get database async {
@@ -27,7 +28,7 @@ class DBProvider {
 
   initDB() async {
     Directory documentsDirectory = await getApplicationDocumentsDirectory(); //
-    String path = join(documentsDirectory.path, "scheduleDB37.db");
+    String path = join(documentsDirectory.path, dbname);
     return await openDatabase(path, version: 1, onOpen: (db) {},
         onCreate: (Database db, int version) async {
       await db.execute("CREATE TABLE Grade ("
@@ -218,7 +219,25 @@ class DBProvider {
     // }
   }
 
-  Future<List<List<Week>>> getCurrentSchedule() {}
+  Future<bool> regreshDb() async {
+    bool databaseDeleted = false;
+
+    try {
+      Directory documentsDirectory = await getApplicationDocumentsDirectory();
+      String path = join(documentsDirectory.path, dbname);
+      await deleteDatabase(path).whenComplete(() {
+        databaseDeleted = true;
+      }).catchError((onError) {
+        databaseDeleted = false;
+      });
+    } on DatabaseException catch (error) {
+      print(error);
+    } catch (error) {
+      print(error);
+    }
+    _database = await initDB();
+    return databaseDeleted;
+  }
 
   fillGradeTable(List<Grade> grades) async {
     await Future.forEach(
