@@ -1,10 +1,19 @@
+import 'dart:io' as io;
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:schedule/api/api_service.dart';
+import 'package:schedule/connectivity/connectivity_service.dart';
+import 'package:schedule/database/gerard-benedict.dart';
 import 'package:schedule/schedule/classes/import_classes.dart';
 import 'package:schedule/schedule/classes/week.dart';
+import 'package:path/path.dart';
 
 class EntryPageProvider with ChangeNotifier {
   final api = RestClient.create();
+  final connectivity = ConnectivityService().ConnectionStatusController.stream;
+  final DBProvider db = DBProvider.db;
   bool dbFilled = true;
   int currentGradeID = 0;
   String currentProgName = '-';
@@ -12,13 +21,64 @@ class EntryPageProvider with ChangeNotifier {
   List<Grade> grades = [];
   List<List<Group>> allgroups = [];
   Map<int, Schedule> schedules = Map<int, Schedule>();
-  int currentWeek = 0;
+  List<Week> weeks;
 
   EntryPageProvider() {
     fillGrades();
   }
 
   Future<void> fillGrades() async {
+    io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, db.dbname);
+    if (await io.File(path).exists()) {
+      await _fillGradesFromDB();
+    } else {
+      if (await connectivity.first == ConnectionStatus.Online) {
+        await _fillGradesFromApi();
+      }
+    }
+  }
+
+  void noConnectionSnackBar(BuildContext context) {
+    Scaffold.of(context).showSnackBar(
+        new SnackBar(content: new Text("Отсутствует подключение к интернету")));
+  }
+
+  void refresh(BuildContext context) async {
+    await connectivity.first.then(
+      (value) async {
+        if (value == ConnectionStatus.Online) {
+          await _fillGradesFromApi();
+        } else {
+          noConnectionSnackBar(context);
+        }
+      },
+    );
+    _fillGradesFromDB();
+  }
+
+  Future<void> _fillGradesFromDB() async {
+    grades = [];
+    allgroups = [];
+    schedules = Map<int, Schedule>();
+
+    grades = await db.getAllGrades();
+    List<int> gradeid = [];
+    await Future.forEach(
+      grades,
+      (grade) {
+        gradeid.add(grade.id);
+      },
+    );
+    allgroups = await db.getAllGroups(gradeid);
+    schedules = await db.getMap();
+    changeGradeID(grades.first.id);
+  }
+
+  Future<void> _fillGradesFromApi() async {
+    grades = [];
+    allgroups = [];
+    schedules = Map<int, Schedule>();
     dbFilled = false;
     grades = await api.getGrades();
     await Future.forEach(
@@ -29,13 +89,7 @@ class EntryPageProvider with ChangeNotifier {
       },
     );
 
-    currentGradeID = grades.first.id;
-    currentProgName = allgroups.first
-        .where((group) => group.gradeid == currentGradeID)
-        .first
-        .name;
-
-    notifyListeners();
+    changeGradeID(grades.first.id);
 
     await Future.forEach(
       allgroups,
@@ -50,24 +104,33 @@ class EntryPageProvider with ChangeNotifier {
         );
       },
     );
-
     // currentWeek = await api.
-    fillDB();
+    _fillDB();
   }
 
-  Future<void> fillDB() async {
-    //TODO записать в бд
+  Future<void> _fillDB() async {
+    await db.refreshDb();
+    await db.fillGradeTable(grades);
+    await db.fillAllGroupTable(allgroups);
+    await db.fillSchedule(schedules);
     dbFilled = true;
     notifyListeners();
   }
 
+  void generateWeeks() async {
+    weeks = [];
+    var week = Week(schedules[currentGradeID], 'lower', currentGroup.id);
+    weeks.add(week);
+    week = Week(schedules[currentGradeID], 'upper', currentGroup.id);
+    weeks.add(week);
+    await db.fillWeeks(weeks);
+    weeks = await db.getWeeks(currentGroup.id);
+  }
+
   List<Week> get currentSchedule {
-    List<Week> weeks = [];
-    var week = Week(schedules[currentGradeID], 'lower');
-    weeks.add(week);
-    week = Week(schedules[currentGradeID], 'upper');
-    weeks.add(week);
+    generateWeeks();
     return weeks;
+    //TODO getWeeks и проверку
   }
 
   void changeGradeID(int newid) {
@@ -77,10 +140,6 @@ class EntryPageProvider with ChangeNotifier {
         .first
         .name;
     changeProgName(progName);
-    // currentGroup = allgroups
-    //     .firstWhere((grade) => grade.first.name == currentProgName)
-    //     .first;
-    // notifyListeners();
   }
 
   void changeProgName(String progName) {
@@ -89,7 +148,6 @@ class EntryPageProvider with ChangeNotifier {
         .firstWhere((grade) => grade.any((gr) => gr.name == currentProgName))
         .first;
     changeGroup(group);
-    // notifyListeners();
   }
 
   void changeGroup(Group group) {

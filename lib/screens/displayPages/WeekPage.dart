@@ -4,7 +4,6 @@ import 'package:schedule/schedule/classes/day.dart';
 import 'package:schedule/schedule/classes/enums.dart';
 import 'package:schedule/schedule/classes/normalLesson/normalLesson.dart';
 import 'package:schedule/screens/displayPages/subjectProvider.dart';
-import 'package:schedule/screens/editPages/EditPage.dart';
 
 class WeekPage extends StatelessWidget {
   @override
@@ -139,10 +138,10 @@ AlertDialog lessonInfo(BuildContext context, int ind, NormalLesson lesson) {
             FlatButton(
               child: Text('Изменить'),
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => EditPage(ind, lesson)));
+                //   Navigator.push(
+                //       context,
+                //       MaterialPageRoute(
+                //           builder: (context) => EditPage(ind, lesson)));
               },
             ),
             FlatButton(
