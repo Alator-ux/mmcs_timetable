@@ -27,7 +27,9 @@ class Lesson {
     String begin = jsonTime.substring(3, 8);
     String end = jsonTime.substring(12, 17);
     int indOfDay = int.parse(jsonTime[1]);
-    print(begin);
+    if (indOfDay > 5) {
+      print(begin);
+    }
     print(end);
     IntervalOfTime _time = IntervalOfTime.fromString(begin, end);
     String tweek = jsonTime.substring(21, jsonTime.length - 1);
@@ -44,7 +46,7 @@ class Lesson {
     String jsonTime = json['time'];
     String begin = jsonTime.substring(0, 5);
     String end = jsonTime.substring(8, 13);
-    int indOfDay = int.parse(jsonTime[1]);
+    int indOfDay = json['day'];
     IntervalOfTime _time = IntervalOfTime.fromString(begin, end);
     // String tweek = jsonTime.substring(21, jsonTime.length - 1);
     return Lesson(

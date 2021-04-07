@@ -119,18 +119,27 @@ class EntryPageProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void generateWeeks() async {
+  Future<void> generateWeeks() async {
+    //TODO если есть в бд, забираем,если нет - генерируем и пушим.
     weeks = [];
-    var week = Week(schedules[currentGroup.id], 'lower', currentGroup.id);
-    weeks.add(week);
-    week = Week(schedules[currentGroup.id], 'upper', currentGroup.id);
-    weeks.add(week);
-    await db.fillWeeks(weeks);
-    // weeks = await db.getWeeks(currentGroup.id);
+    await db.getWeeks(currentGroup.id).then(
+      (value) async {
+        if (value.isNotEmpty) {
+          weeks = value;
+          return;
+        } else {
+          var week = Week(schedules[currentGroup.id], 'lower', currentGroup.id);
+          weeks.add(week);
+          week = Week(schedules[currentGroup.id], 'upper', currentGroup.id);
+          weeks.add(week);
+          await db.fillWeeks(weeks);
+        }
+      },
+    );
   }
 
-  List<Week> get currentSchedule {
-    generateWeeks();
+  Future<List<Week>> getCurrentSchedule() async {
+    await generateWeeks();
     return weeks;
     //TODO getWeeks и проверку
   }

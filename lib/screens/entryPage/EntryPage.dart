@@ -27,18 +27,17 @@ class _EntryPageState extends State<EntryPage> {
             "Далее",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          onPressed: () {
+          onPressed: () async {
             if (provider.canNotShowGroups) {
             } else if (provider.dbFilled) {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => DayPage(provider.currentSchedule)));
+              var value = await provider.getCurrentSchedule();
+              await Navigator.of(context).push(
+                  new MaterialPageRoute(builder: (context) => DayPage(value)));
             }
           },
         ),
         RaisedButton(
-          color: Colors.grey[200],
+          // color: Colors.grey[200],
           child: Text(
             "Обновить",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),

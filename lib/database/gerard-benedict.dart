@@ -15,7 +15,7 @@ import 'package:schedule/schedule/classes/import_classes.dart';
 class DBProvider {
   static final DBProvider db = DBProvider._();
   static Database _database;
-  final String dbname = "schedule112.db";
+  final String dbname = "schedule121.db";
   DBProvider._();
 
   Future<Database> get database async {
@@ -73,9 +73,23 @@ class DBProvider {
     });
   }
 
+  getNormalLesson(int gr_id) async {
+    final db = await database;
+    return db.query("NormalLesson", where: ("groupid = ${gr_id}"));
+  }
+
+  _clearNormalLessonTable(int group_id) async {
+    final db = await database;
+    // var res = await db.delete("NormalLesson", where: groupid == group_id);
+    var res = await db
+        .rawDelete("DELETE FROM NormalLesson WHERE groupid = $group_id");
+    return res;
+  }
+
   newNormalLesson(NormalLesson normalLesson) async {
     final db = await database;
-    var res = await db.insert("NormalLesson", normalLesson.toJson());
+    var nj = normalLesson.toJson();
+    var res = await db.insert("NormalLesson", nj);
     return res;
   }
 
@@ -146,7 +160,7 @@ class DBProvider {
   Future<Map<int, Schedule>> getMap() async {
     var lessons = await _getLessons();
     var curricula = await _getCurricula();
-    var groupid = lessons.map((lesson) => lesson.groupid);
+    var groupid = lessons.map((lesson) => lesson.groupid).toSet();
     var res = Map<int, Schedule>();
     groupid.forEach(
       (id) {
@@ -171,6 +185,9 @@ class DBProvider {
   Future<List<Week>> getWeeks(int groupid) async {
     var normalLessons = await _getNormalLessons();
     var lessons = normalLessons.where((lesson) => lesson.groupid == groupid);
+    if (lessons.isEmpty) {
+      return [];
+    }
     List<Week> res = [Week.fromDB(), Week.fromDB()];
     var lowerlessons = lessons.where((lesson) => lesson.typeOfWeek == "lower");
     var upperlessons = lessons.where((lesson) => lesson.typeOfWeek == "upper");
