@@ -6,11 +6,11 @@ import '../time.dart';
 //@JsonSerializable()
 class Lesson {
   int id;
-  int uberid;
+  int groupid;
   IntervalOfTime time;
   int day;
   String typeOfWeek;
-  Lesson({this.time, this.day, this.id, this.uberid, this.typeOfWeek});
+  Lesson({this.time, this.day, this.id, this.groupid, this.typeOfWeek});
 
   // Lesson.withTimeFromString(
   //     {@required String time, @required int id, @required int uberid}) {
@@ -22,7 +22,7 @@ class Lesson {
   //   this.uberid = uberid;
   // }
 
-  factory Lesson.fromJson(Map<String, dynamic> json) {
+  factory Lesson.fromJson(Map<String, dynamic> json, int groupID) {
     String jsonTime = json['timeslot'];
     String begin = jsonTime.substring(3, 8);
     String end = jsonTime.substring(12, 17);
@@ -35,24 +35,24 @@ class Lesson {
       time: _time,
       day: indOfDay,
       id: json['id'] as int,
-      uberid: json['uberid'] as int,
+      groupid: groupID,
       typeOfWeek: tweek,
     );
   }
 
   factory Lesson.fromJsonFromDB(Map<String, dynamic> json) {
     String jsonTime = json['time'];
-    String begin = jsonTime.substring(0, 4);
-    String end = jsonTime.substring(5, 9);
+    String begin = jsonTime.substring(0, 5);
+    String end = jsonTime.substring(8, 13);
     int indOfDay = int.parse(jsonTime[1]);
     IntervalOfTime _time = IntervalOfTime.fromString(begin, end);
-    String tweek = jsonTime.substring(21, jsonTime.length - 1);
+    // String tweek = jsonTime.substring(21, jsonTime.length - 1);
     return Lesson(
       time: _time,
       day: indOfDay,
       id: json['id'] as int,
-      uberid: json['uberid'] as int,
-      typeOfWeek: tweek,
+      groupid: json['groupid'] as int,
+      typeOfWeek: json['typeOfWeek'],
     );
   }
 
@@ -62,7 +62,7 @@ class Lesson {
       'time': time,
       'day': day,
       'id': id,
-      'uberid': uberid,
+      'groupid': groupid,
       'typeOfWeek': typeOfWeek,
     };
   }

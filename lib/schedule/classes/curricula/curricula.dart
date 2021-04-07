@@ -6,7 +6,6 @@ part 'curricula.g.dart';
 class Curricula {
   int id;
   int lessonid;
-  int subjectid;
   String subjectname;
   String subjectabbr;
   int teacherid;
@@ -16,7 +15,6 @@ class Curricula {
   Curricula(
       {this.id,
       this.lessonid,
-      this.subjectid,
       this.subjectname,
       this.subjectabbr,
       this.teacherid,

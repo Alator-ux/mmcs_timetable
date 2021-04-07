@@ -11,7 +11,7 @@ class Schedule {
 
   Schedule({this.lessons, this.curricula});
 
-  factory Schedule.fromJson(Map<String, dynamic> json) =>
-      _$ScheduleFromJson(json);
+  factory Schedule.fromJson(Map<String, dynamic> json, int groupID) =>
+      _$ScheduleFromJson(json, groupID);
   Map<String, dynamic> toJson() => _$ScheduleToJson(this);
 }

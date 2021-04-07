@@ -13,4 +13,13 @@ class GroupsForDegree {
   factory GroupsForDegree.fromJson(Map<String, dynamic> json) =>
       _$GroupsForDegreeFromJson(json);
   Map<String, dynamic> toJson() => _$GroupsForDegreeToJson(this);
+
+  Map<String, dynamic> toJson1() {
+    List<Map> jsonGroups =
+        groups != null ? groups.map((i) => i.toJson()).toList() : null;
+    return {
+      'id': id,
+      'groups': jsonGroups,
+    };
+  }
 }

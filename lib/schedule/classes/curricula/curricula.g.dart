@@ -10,7 +10,6 @@ Curricula _$CurriculaFromJson(Map<String, dynamic> json) {
   return Curricula(
     id: json['id'] as int,
     lessonid: json['lessonid'] as int,
-    subjectid: json['subjectid'] as int,
     subjectname: json['subjectname'] as String,
     subjectabbr: json['subjectabbr'] as String,
     teacherid: json['teacherid'] as int,
@@ -23,7 +22,6 @@ Curricula _$CurriculaFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$CurriculaToJson(Curricula instance) => <String, dynamic>{
       'id': instance.id,
       'lessonid': instance.lessonid,
-      'subjectid': instance.subjectid,
       'subjectname': instance.subjectname,
       'subjectabbr': instance.subjectabbr,
       'teacherid': instance.teacherid,

@@ -9,13 +9,15 @@ class Day {
   Day() {
     normalLessons = [];
   }
-  Day.fromSchedule(Schedule schedules) {
+  Day.fromSchedule(
+      Schedule schedules, String typeOfWeek, int dayid, int groupID) {
     normalLessons = [];
     schedules.lessons.forEach(
       (lesson) {
         var curricula =
             schedules.curricula.firstWhere((cur) => cur.lessonid == lesson.id);
-        var nLesson = NormalLesson(lesson, curricula);
+        var nLesson =
+            NormalLesson.forDay(lesson, curricula, typeOfWeek, dayid, groupID);
         normalLessons.add(nLesson);
       },
     );
