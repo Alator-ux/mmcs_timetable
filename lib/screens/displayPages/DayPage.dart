@@ -15,7 +15,7 @@ class DayPage extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: MyAppBar(),
+        appBar: MyAppBarHelp(),
         body: ChangeNotifierProvider(
           create: (context) => SubjectProvider.first(weeks),
           child: PageView(

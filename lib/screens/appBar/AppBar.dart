@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:schedule/main.dart';
 import 'package:schedule/screens/entryPage/EntryPage.dart';
 
 //сам эппбар без секции с помощью
@@ -27,11 +28,8 @@ class MyAppBarHelp extends StatelessWidget implements PreferredSizeWidget {
       title: Text('MMCS_TimeTable'),
       leading: FlatButton(
         highlightColor: Colors.transparent,
-        onPressed: () => Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (BuildContext context) =>
-                    Scaffold(appBar: MyAppBar(), body: EntryPage()))),
+        onPressed: () => Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (BuildContext context) => MainPage())),
         child: Icon(
           Icons.arrow_back,
           color: Colors.white,

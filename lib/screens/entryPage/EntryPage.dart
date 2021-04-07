@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:schedule/connectivity/connectivity_service.dart';
 import 'package:schedule/schedule/classes/import_classes.dart';
+import 'package:schedule/screens/displayPages/DayPage.dart';
 import 'package:schedule/screens/entryPage/EntryPageProvider.dart';
 import 'DDButton.dart';
 import 'package:provider/provider.dart';
-
-import '../DayPage.dart';
 
 class EntryPage extends StatefulWidget {
   @override
@@ -13,6 +13,7 @@ class EntryPage extends StatefulWidget {
 
 class _EntryPageState extends State<EntryPage> {
   EntryPageProvider provider;
+
   @override
   Widget build(BuildContext context) {
     provider = Provider.of<EntryPageProvider>(context);
@@ -27,14 +28,24 @@ class _EntryPageState extends State<EntryPage> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           onPressed: () {
-            if (provider.canNotGetSchedule) {
-              //TODO snackbar
-              print('ну удалось');
-            } else {
+            if (provider.canNotShowGroups) {
+            } else if (provider.dbFilled) {
               Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => DayPage(provider.currentSchedule)));
+            }
+          },
+        ),
+        RaisedButton(
+          color: Colors.grey[200],
+          child: Text(
+            "Обновить",
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          onPressed: () {
+            if (provider.dbFilled) {
+              provider.refresh(context);
             }
           },
         ),

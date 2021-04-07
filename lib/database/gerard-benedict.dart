@@ -15,7 +15,7 @@ import 'package:schedule/schedule/classes/import_classes.dart';
 class DBProvider {
   static final DBProvider db = DBProvider._();
   static Database _database;
-  final String dbname = "schedule102.db";
+  final String dbname = "schedule112.db";
   DBProvider._();
 
   Future<Database> get database async {
@@ -31,12 +31,12 @@ class DBProvider {
     return await openDatabase(path, version: 1, onOpen: (db) {},
         onCreate: (Database db, int version) async {
       await db.execute("CREATE TABLE Grade ("
-          "id INTEGER PRIMARY KEY,"
+          "id INTEGER,"
           "num INTEGER,"
           "degree TEXT"
           ")");
       await db.execute("CREATE TABLE AllGroups ("
-          "id INTEGER PRIMARY KEY,"
+          "id INTEGER,"
           "name TEXT,"
           "num INTEGER,"
           "gradeid INTEGER"
@@ -217,13 +217,17 @@ class DBProvider {
         databaseDeleted = true;
       }).catchError((onError) {
         databaseDeleted = false;
-      });
+      }).whenComplete(
+        () async {
+          _database = await initDB();
+        },
+      );
     } on DatabaseException catch (error) {
       print(error);
     } catch (error) {
       print(error);
     }
-    _database = await initDB();
+
     return databaseDeleted;
   }
 
@@ -237,7 +241,6 @@ class DBProvider {
   }
 
   fillAllGroupTable(List<List<Group>> allgroups) async {
-    print('aaaaaa');
     await Future.forEach(
       allgroups,
       (groups) async {

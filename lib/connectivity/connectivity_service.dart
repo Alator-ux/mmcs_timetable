@@ -3,7 +3,7 @@ import 'package:connectivity/connectivity.dart';
 
 class ConnectivityService {
   StreamController<ConnectionStatus> ConnectionStatusController =
-      StreamController<ConnectionStatus>();
+      StreamController<ConnectionStatus>.broadcast();
 
   ConnectivityService() {
     Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
