@@ -92,7 +92,7 @@ class _RestClient implements RestClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    final value = Schedule.fromJson(_result.data);
+    final value = Schedule.fromJson(_result.data, lessonID);
     return value;
   }
 
@@ -111,7 +111,7 @@ class _RestClient implements RestClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    final value = Schedule.fromJson(_result.data);
+    final value = Schedule.fromJson(_result.data, groupID);
     return value;
   }
 
