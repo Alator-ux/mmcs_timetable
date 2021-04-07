@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io' as io;
 
 import 'package:flutter/cupertino.dart';
@@ -12,7 +13,7 @@ import 'package:path/path.dart';
 
 class EntryPageProvider with ChangeNotifier {
   final api = RestClient.create();
-  final connectivity = ConnectivityService().ConnectionStatusController.stream;
+  final connectivity = ConnectivityService();
   DBProvider db = DBProvider.db;
   bool dbFilled = true;
   int currentGradeID = 0;
@@ -22,9 +23,25 @@ class EntryPageProvider with ChangeNotifier {
   List<List<Group>> allgroups = [];
   Map<int, Schedule> schedules = Map<int, Schedule>();
   List<Week> weeks;
+  bool isOnline = false;
+  StreamSubscription _streamSubscription;
 
   EntryPageProvider() {
+    connectivity.currentStatus
+        .then((value) => isOnline = value == ConnectionStatus.Online);
+    _streamSubscription = connectivity.ConnectionStatusController.stream.listen(
+      (event) {
+        isOnline = event == ConnectionStatus.Online;
+        notifyListeners();
+      },
+    );
     fillGrades();
+  }
+
+  @override
+  void dispose() {
+    _streamSubscription.cancel();
+    super.dispose();
   }
 
   Future<void> fillGrades() async {
@@ -33,29 +50,23 @@ class EntryPageProvider with ChangeNotifier {
     if (await io.File(path).exists()) {
       await _fillGradesFromDB();
     } else {
-      // if (await connectivity.first == ConnectionStatus.Online) {
-      await _fillGradesFromApi();
-      // }
+      if (isOnline) {
+        await _fillGradesFromApi();
+      }
     }
   }
 
   void noConnectionSnackBar(BuildContext context) {
     Scaffold.of(context).showSnackBar(
-        new SnackBar(content: new Text("Отсутствует подключение к интернету")));
+        SnackBar(content: Text("Отсутствует подключение к интернету")));
   }
 
   void refresh(BuildContext context) async {
-    await _fillGradesFromApi();
-    await connectivity.first.then(
-      (value) async {
-        if (value == ConnectionStatus.Online) {
-          await _fillGradesFromApi();
-        } else {
-          noConnectionSnackBar(context);
-        }
-      },
-    );
-    // await _fillGradesFromDB();
+    if (isOnline) {
+      await _fillGradesFromApi();
+    } else {
+      noConnectionSnackBar(context);
+    }
   }
 
   Future<void> _fillGradesFromDB() async {

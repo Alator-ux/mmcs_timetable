@@ -15,7 +15,15 @@ class _EntryPageState extends State<EntryPage> {
   EntryPageProvider provider;
 
   @override
+  void dispose() {
+    provider.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    // TextStyle _textStyle = TextStyle(fontSize: width / 25);
     provider = Provider.of<EntryPageProvider>(context);
     return Column(
       children: [
@@ -29,7 +37,13 @@ class _EntryPageState extends State<EntryPage> {
           ),
           onPressed: () async {
             if (provider.canNotShowGroups) {
-            } else if (provider.dbFilled) {
+            } else if (!provider.dbFilled) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                new SnackBar(
+                  content: new Text("Пожалуйста, подождите"),
+                ),
+              );
+            } else {
               var value = await provider.getCurrentSchedule();
               await Navigator.of(context).push(
                   new MaterialPageRoute(builder: (context) => DayPage(value)));
@@ -42,11 +56,13 @@ class _EntryPageState extends State<EntryPage> {
             "Обновить",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          onPressed: () {
-            if (provider.dbFilled) {
-              provider.refresh(context);
-            }
-          },
+          onPressed: provider.isOnline
+              ? () {
+                  if (provider.dbFilled) {
+                    provider.refresh(context);
+                  }
+                }
+              : null,
         ),
       ],
     );
@@ -61,11 +77,11 @@ class InformationCard extends StatefulWidget {
 }
 
 class _InformationCardState extends State<InformationCard> {
-  final TextStyle _textStyle =
-      TextStyle(/*fontSize: 10,*/ fontWeight: FontWeight.bold);
-
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    TextStyle _textStyle =
+        TextStyle(fontSize: width * 0.05, fontWeight: FontWeight.bold);
     return Container(
       width: double.infinity,
       child: Card(

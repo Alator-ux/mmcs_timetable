@@ -4,9 +4,15 @@ import 'package:connectivity/connectivity.dart';
 class ConnectivityService {
   StreamController<ConnectionStatus> ConnectionStatusController =
       StreamController<ConnectionStatus>.broadcast();
+  Connectivity connectivity = Connectivity();
+
+  Future<ConnectionStatus> get currentStatus async {
+    var result = await connectivity.checkConnectivity();
+    return _getStatusFromResult(result);
+  }
 
   ConnectivityService() {
-    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+    connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
       ConnectionStatusController.add(_getStatusFromResult(result));
     });
   }
