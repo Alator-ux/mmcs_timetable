@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:schedule/schedule/classes/day.dart';
 import 'package:schedule/schedule/classes/lesson.dart';
 import 'package:schedule/schedule/classes/week.dart';
+import 'package:schedule/screens/displayPages/subjectProvider.dart';
 import 'WeekPage.dart';
-import 'AppBar.dart';
+import '../appBar/AppBar.dart';
 
 class DayPage extends StatelessWidget {
-  final List<Week> weeks;
+  List<Week> weeks;
   DayPage(this.weeks);
   @override
   Widget build(BuildContext context) {
@@ -14,8 +16,11 @@ class DayPage extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: MyAppBar(),
-        body: PageView(
-          children: [Subjects(weeks), WeekPage(weeks)],
+        body: ChangeNotifierProvider(
+          create: (context) => SubjectProvider.first(weeks),
+          child: PageView(
+            children: [Subjects(), WeekPage()],
+          ),
         ),
         //bottomNavigationBar: , TODO
       ),
@@ -24,20 +29,18 @@ class DayPage extends StatelessWidget {
 }
 
 class Subjects extends StatelessWidget {
-  final weekDay = DateTime.now().weekday - 1;
-  int curWeek = 0;
-  List<Week> weeks;
-  Subjects(this.weeks);
   @override
   Widget build(BuildContext context) {
     return ListView(
       key: PageStorageKey<String>('DayPageScrollingPosition'),
-      children: subjectsInf(context, weeks[curWeek].days[weekDay]),
+      children: subjectsInf(context),
     );
   }
 }
 
-List<Widget> subjectsInf(BuildContext context, Day day) {
+List<Widget> subjectsInf(BuildContext context) {
+  SubjectProvider provider = Provider.of<SubjectProvider>(context);
+  Day day = provider.currentDay;
   if (day.isEmpty) {
     return [
       Container(
@@ -45,8 +48,7 @@ List<Widget> subjectsInf(BuildContext context, Day day) {
       ),
     ];
   }
-  return day.normalLessons.reversed.toList().
-      /*return daynormalLessons.*/ map((lesson) {
+  return day.normalLessons.map((lesson) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
       child: Container(
@@ -66,7 +68,9 @@ List<Widget> subjectsInf(BuildContext context, Day day) {
               ),
               width: double.infinity,
               alignment: Alignment.center,
-              child: Text(lesson.subjectabbr),
+              child: Text(lesson.subjectabbr.isEmpty
+                  ? lesson.subjectname
+                  : lesson.subjectabbr),
             ),
           ),
           Expanded(

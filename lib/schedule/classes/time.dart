@@ -30,8 +30,30 @@ class IntervalOfTime {
     return this.begin.toString().substring(10, 15);
   }
 
+  String beginHourAsString() {
+    return this.begin.toString().substring(10, 12);
+  }
+
   String endAsString() {
     return this.end.toString().substring(10, 15);
+  }
+
+  static int compare(IntervalOfTime t1, IntervalOfTime t2) {
+    if (t1.begin.hour > t2.begin.hour) {
+      return 1;
+    }
+    if (t1.begin == t2.begin) {
+      return 0;
+    }
+    if (t1.begin.hour < t2.begin.hour) {
+      return -1;
+    }
+    if (t1.begin.minute < t2.begin.minute) {
+      return -1;
+    }
+    if (t1.begin.minute >= t2.begin.minute) {
+      return 1;
+    }
   }
 
   //TODO bool isCrossed(IntervalOfTime other) {}
