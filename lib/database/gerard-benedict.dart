@@ -15,7 +15,7 @@ import 'package:schedule/schedule/classes/import_classes.dart';
 class DBProvider {
   static final DBProvider db = DBProvider._();
   static Database _database;
-  final String dbname = "schedule101.db";
+  final String dbname = "schedule102.db";
   DBProvider._();
 
   Future<Database> get database async {
@@ -219,7 +219,7 @@ class DBProvider {
     // }
   }
 
-  Future<bool> regreshDb() async {
+  Future<bool> refreshDb() async {
     bool databaseDeleted = false;
 
     try {
