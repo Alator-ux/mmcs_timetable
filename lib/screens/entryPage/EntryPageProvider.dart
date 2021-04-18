@@ -160,10 +160,6 @@ class EntryPageProvider with ChangeNotifier {
         .firstWhere((grade) => grade.any((gr) => gr.gradeid == currentGradeID))
         .first;
     changeGroup(group);
-    // var progName = allgroups
-    //     .firstWhere((group) => group.first.gradeid == currentGradeID)
-    //     .first
-    //     .name;
   }
 
   void changeGroup(Group group) {

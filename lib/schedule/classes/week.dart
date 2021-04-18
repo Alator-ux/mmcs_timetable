@@ -21,6 +21,9 @@ class Week {
     //если пусто расписание пар для группы(которая определяется в generateweeks в entryPageProvider)
     //т.е. если нет совсем ничего, возвращаем пустой список.
     if (schedule == null) {
+      for (int i = 0; i < 7; i++) {
+        days.add(Day());
+      }
       return;
     }
     for (int i = 0; i < 7; i++) {
