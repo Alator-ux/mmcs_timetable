@@ -13,11 +13,4 @@ class Group {
 
   factory Group.fromJson(Map<String, dynamic> json) => _$GroupFromJson(json);
   Map<String, dynamic> toJson() => _$GroupToJson(this);
-
-  Map toJson1() => {
-        'id': id,
-        'name': name,
-        'n': n,
-        'gradeid': gradeid,
-      };
 }

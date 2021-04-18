@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:schedule/main.dart';
 import 'package:schedule/schedule/classes/day.dart';
 import 'package:schedule/schedule/classes/enums.dart';
 import 'package:schedule/schedule/classes/normalLesson/normalLesson.dart';
@@ -15,7 +16,7 @@ class WeekPage extends StatelessWidget {
         itemCount: 7,
         separatorBuilder: (context, index) => SizedBox(height: 10),
         itemBuilder: (BuildContext context, int index) {
-          double width = MediaQuery.of(context).size.width;
+          double width = SizeProvider().width;
           TextStyle _textStyle = TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,
@@ -53,12 +54,12 @@ class WeekPage extends StatelessWidget {
 }
 
 List<Widget> expansionTileItems(BuildContext context, int index) {
-  double width = MediaQuery.of(context).size.width;
-  TextStyle _textStyle = TextStyle(
-      color: Colors.black, fontWeight: FontWeight.bold, fontSize: width / 25);
-  TextStyle _timeTextStyle = TextStyle(
-      color: Colors.black, fontWeight: FontWeight.bold, fontSize: width / 20);
   SubjectProvider provider = Provider.of<SubjectProvider>(context);
+  double width = SizeProvider().width;
+  TextStyle _textStyle = TextStyle(
+      color: Colors.black, fontWeight: FontWeight.bold, fontSize: width * 0.04);
+  TextStyle _timeTextStyle = TextStyle(
+      color: Colors.black, fontWeight: FontWeight.bold, fontSize: width * 0.05);
   Day day = provider.dayByDayID(index);
   if (day.isEmpty)
     return [
@@ -96,19 +97,21 @@ List<Widget> expansionTileItems(BuildContext context, int index) {
                     context: context,
                     builder: (context) => lessonInfo(context, index, lesson));
               },
-              child: Row(children: [
-                Text(
-                  lesson.time.asString(),
-                  style: _textStyle,
-                ),
-                SizedBox(width: 10),
-                Text(
-                  lesson.subjectabbr.isEmpty
-                      ? lesson.subjectname
-                      : lesson.subjectabbr,
-                  style: _textStyle,
-                ),
-              ]),
+              child: Row(
+                children: [
+                  Text(
+                    lesson.time.asString(),
+                    style: _textStyle,
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    lesson.subjectabbr.isEmpty
+                        ? lesson.subjectname
+                        : lesson.subjectabbr,
+                    style: _textStyle,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

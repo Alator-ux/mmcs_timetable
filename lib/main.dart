@@ -23,6 +23,11 @@ class MainPage extends StatelessWidget {
       create: (context) => RestClient.create(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
+        builder: (context, child) {
+          var size = MediaQuery.of(context).size;
+          SizeProvider()..setSize(size.width, size.height);
+          return child;
+        },
         home: Scaffold(
           appBar: MyAppBar(),
           backgroundColor: Colors.white,
@@ -33,5 +38,20 @@ class MainPage extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class SizeProvider {
+  static SizeProvider _instance;
+  double width;
+  double height;
+  SizeProvider._();
+  factory SizeProvider() {
+    _instance ??= SizeProvider._();
+    return _instance;
+  }
+  void setSize(double width, double height) {
+    this.width = width;
+    this.height = height;
   }
 }

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'groupsForDegree.dart';
+/*part of 'groupsForDegree.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
@@ -21,3 +21,4 @@ Map<String, dynamic> _$GroupsForDegreeToJson(GroupsForDegree instance) =>
       'id': instance.id,
       'groups': instance.groups,
     };
+*/

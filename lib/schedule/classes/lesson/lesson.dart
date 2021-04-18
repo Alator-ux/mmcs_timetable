@@ -1,6 +1,7 @@
 import 'package:schedule/schedule/classes/enums.dart';
 
 import '../time.dart';
+part 'lesson.g.dart';
 // import 'package:flutter/cupertino.dart';
 
 //@JsonSerializable()
@@ -22,52 +23,13 @@ class Lesson {
   //   this.uberid = uberid;
   // }
 
-  factory Lesson.fromJson(Map<String, dynamic> json, int groupID) {
-    String jsonTime = json['timeslot'];
-    String begin = jsonTime.substring(3, 8);
-    String end = jsonTime.substring(12, 17);
-    int indOfDay = int.parse(jsonTime[1]);
-    if (indOfDay > 5) {
-      print(begin);
-    }
-    print(end);
-    IntervalOfTime _time = IntervalOfTime.fromString(begin, end);
-    String tweek = jsonTime.substring(21, jsonTime.length - 1);
-    return Lesson(
-      time: _time,
-      day: indOfDay,
-      id: json['id'] as int,
-      groupid: groupID,
-      typeOfWeek: tweek,
-    );
-  }
+  factory Lesson.fromJson(Map<String, dynamic> json, int groupID) =>
+      _$LessonFromJson(json, groupID);
 
-  factory Lesson.fromJsonFromDB(Map<String, dynamic> json) {
-    String jsonTime = json['time'];
-    String begin = jsonTime.substring(0, 5);
-    String end = jsonTime.substring(8, 13);
-    int indOfDay = json['day'];
-    IntervalOfTime _time = IntervalOfTime.fromString(begin, end);
-    // String tweek = jsonTime.substring(21, jsonTime.length - 1);
-    return Lesson(
-      time: _time,
-      day: indOfDay,
-      id: json['id'] as int,
-      groupid: json['groupid'] as int,
-      typeOfWeek: json['typeOfWeek'],
-    );
-  }
+  factory Lesson.fromJsonFromDB(Map<String, dynamic> json) =>
+      _$LessonFromJsonFromDB(json);
 
-  Map<String, dynamic> toJson() {
-    String time = this.time.asString();
-    return {
-      'time': time,
-      'day': day,
-      'id': id,
-      'groupid': groupid,
-      'typeOfWeek': typeOfWeek,
-    };
-  }
+  Map<String, dynamic> toJson() => _$LessonToJson(this);
   /*IntervalOfTime get time => _time;
 
   String get subject => _subject;

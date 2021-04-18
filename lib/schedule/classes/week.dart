@@ -8,12 +8,14 @@ import 'lesson/lesson.dart';
 ///Каждый элемент соответсвует дню недели
 class Week {
   List<Day> days;
+
   Week.fromDB() {
     days = [];
     for (int i = 0; i < 7; i++) {
       days.add(Day());
     }
   }
+
   Week(Schedule schedule, String typeOfWeek, int groupID) {
     days = [];
     for (int i = 0; i < 7; i++) {

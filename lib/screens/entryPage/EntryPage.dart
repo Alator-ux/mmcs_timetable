@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:schedule/main.dart';
 import 'package:schedule/schedule/classes/import_classes.dart';
 import 'package:schedule/screens/displayPages/DayPage.dart';
 import 'package:schedule/screens/displayPages/subjectProvider.dart';
@@ -7,6 +8,11 @@ import 'DDButton.dart';
 import 'package:provider/provider.dart';
 
 class EntryPage extends StatefulWidget {
+  // EntryPage(BuildContext context) {
+  //   var
+  //   var provider = Provider.of<EntryPageProvider>(context);
+  //   provider.changeTextSize(size);
+  // }
   @override
   _EntryPageState createState() => _EntryPageState();
 }
@@ -36,18 +42,17 @@ class _EntryPageState extends State<EntryPage> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           onPressed: () async {
-            if (provider.canNotShowGroups) {
-            } else if (!provider.dbFilled) {
+            if (!provider.canShowGroups || !provider.dbFilled) {
               ScaffoldMessenger.of(context).showSnackBar(
                 new SnackBar(
-                  content: new Text("Пожалуйста, подождите"),
+                  content: new Text("Пожалуйста, подождите пару секунд"),
                 ),
               );
             } else {
               var value = await provider.getCurrentSchedule();
-              var provider2 = SubjectProvider.first(value);
+              var subjectProvider = SubjectProvider.first(value);
               await Navigator.of(context).push(new MaterialPageRoute(
-                  builder: (context) => DayPage(value, provider2)));
+                  builder: (context) => DayPage(subjectProvider)));
             }
           },
         ),
@@ -80,7 +85,7 @@ class InformationCard extends StatefulWidget {
 class _InformationCardState extends State<InformationCard> {
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
+    var width = SizeProvider().width;
     TextStyle _textStyle =
         TextStyle(fontSize: width * 0.05, fontWeight: FontWeight.bold);
     return Container(

@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:schedule/main.dart';
 import 'package:schedule/schedule/classes/day.dart';
-import 'package:schedule/schedule/classes/lesson.dart';
-import 'package:schedule/schedule/classes/week.dart';
 import 'package:schedule/screens/displayPages/subjectProvider.dart';
 import 'WeekPage.dart';
 import '../appBar/AppBar.dart';
 
 class DayPage extends StatelessWidget {
-  List<Week> weeks;
   SubjectProvider provider;
-  DayPage(this.weeks, this.provider);
+  DayPage(this.provider);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -60,10 +58,10 @@ class Subjects extends StatelessWidget {
 }
 
 List<Widget> subjectsInf(BuildContext context) {
-  double width = MediaQuery.of(context).size.width;
-  TextStyle _textStyle = TextStyle(fontSize: width / 25);
-  TextStyle _cardTextStyle = TextStyle(fontSize: width / 25);
   SubjectProvider provider = Provider.of<SubjectProvider>(context);
+  double width = SizeProvider().width;
+  TextStyle _cardTextStyle = TextStyle(fontSize: width * 0.04);
+  TextStyle _textStyle = TextStyle(fontSize: width * 0.04);
   Day day = provider.currentDay;
   if (day.normalLessons.length == 0) {
     return [

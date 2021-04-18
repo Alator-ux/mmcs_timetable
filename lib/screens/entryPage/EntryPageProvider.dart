@@ -35,7 +35,7 @@ class EntryPageProvider with ChangeNotifier {
         notifyListeners();
       },
     );
-    fillGrades();
+    _fillGrades();
   }
 
   @override
@@ -44,7 +44,7 @@ class EntryPageProvider with ChangeNotifier {
     super.dispose();
   }
 
-  Future<void> fillGrades() async {
+  Future<void> _fillGrades() async {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, db.dbname);
     if (await io.File(path).exists()) {
@@ -116,7 +116,6 @@ class EntryPageProvider with ChangeNotifier {
     );
 
     changeGradeID(grades.first.id);
-    // currentWeek = await api.
     await _fillDB();
   }
 
@@ -130,7 +129,7 @@ class EntryPageProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> generateWeeks() async {
+  Future<void> _generateWeeks() async {
     //TODO если есть в бд, забираем,если нет - генерируем и пушим.
     weeks = [];
     await db.getWeeks(currentGroup.id).then(
@@ -150,7 +149,7 @@ class EntryPageProvider with ChangeNotifier {
   }
 
   Future<List<Week>> getCurrentSchedule() async {
-    await generateWeeks();
+    await _generateWeeks();
     return weeks;
     //TODO getWeeks и проверку
   }
@@ -195,15 +194,15 @@ class EntryPageProvider with ChangeNotifier {
     return res.toList();
   }
 
-  bool get canNotShowGrades {
-    return grades.isEmpty;
+  bool get canShowGrades {
+    return grades.isNotEmpty;
   }
 
-  bool get canNotShowGroups {
-    return allgroups.isEmpty || allgroups.first.first.id == 0;
+  bool get canShowGroups {
+    return !(allgroups.isEmpty || allgroups.first.first.id == 0);
   }
 
-  bool get canNotGetSchedule {
-    return schedules.isEmpty || !dbFilled;
+  bool get canGetSchedule {
+    return !(schedules.isEmpty || !dbFilled);
   }
 }

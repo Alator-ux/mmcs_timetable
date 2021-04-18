@@ -46,7 +46,7 @@ class NormalLesson {
       lessonid: json['lessonid'] as int,
       groupid: json['groupid'] as int,
       typeOfWeek: json['typeOfWeek'] as String,
-      dayid: json['dayid'],
+      dayid: json['dayid'] as int,
       time: _time,
       subjectname: json['subjectname'] as String,
       subjectabbr: json['subjectabbr'] as String,

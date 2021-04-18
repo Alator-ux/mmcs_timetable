@@ -12,7 +12,7 @@ class Pair<FT, ST> {
 }
 
 List<DropdownMenuItem<Grade>> gradeItems(EntryPageProvider provider) {
-  if (provider.canNotShowGrades) {
+  if (!provider.canShowGrades) {
     return [
       DropdownMenuItem<Grade>(
         value: Grade(id: 0, n: 0, degree: '-'),
@@ -38,7 +38,7 @@ List<DropdownMenuItem<Grade>> gradeItems(EntryPageProvider provider) {
 }
 
 List<DropdownMenuItem<String>> progItems(EntryPageProvider provider) {
-  if (provider.canNotShowGroups) {
+  if (!provider.canShowGroups) {
     return [
       DropdownMenuItem<String>(
         value: '0',
@@ -65,7 +65,7 @@ List<DropdownMenuItem<String>> progItems(EntryPageProvider provider) {
 }
 
 List<DropdownMenuItem<Group>> groupItems(EntryPageProvider provider) {
-  if (provider.canNotShowGroups) {
+  if (!provider.canShowGroups) {
     return [
       DropdownMenuItem<Group>(
         value: Group(id: 0, n: 0, gradeid: 0, name: '-'),
@@ -98,33 +98,3 @@ String degreeFromString(String degree) {
   } else if (degree == 'postgraduate') return "Аспирантура";
   return ' ';
 }
-
-// int idFromDegree(String)
-
-// List<String> getgrades() {
-//   final list = List<String>();
-//   for (int i = 1; i < 6; i++) {
-//     list.add("Бакалавриат " + i.toString() + " курс");
-//   }
-//   for (int i = 1; i < 3; i++) {
-//     list.add(
-//       "Магистратура " + i.toString() + " курс",
-//     );
-//   }
-//   for (int i = 1; i < 3; i++) {
-//     list.add(
-//       "Аспирантура " + i.toString() + " курс",
-//     );
-//   }
-//   return list;
-// }
-
-// List<String> getProgs() {
-//   List<String> list = ["1", "2", "3"];
-//   return list;
-// }
-
-// List<String> getGroups() {
-//   List<String> list = ["1", "2", "3", "4"];
-//   return list;
-// }

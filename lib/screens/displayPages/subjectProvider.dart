@@ -10,10 +10,9 @@ class SubjectProvider with ChangeNotifier {
   int dayIDToChange;
   int curDay = DateTime.now().weekday - 1;
   int curWeek = 0;
+  double screenWidth;
   SubjectProvider();
-  SubjectProvider.first(List<Week> w) {
-    weeks = w;
-  }
+  SubjectProvider.first(this.weeks);
 
   Day get currentDay {
     return weeks[curWeek].days[curDay];

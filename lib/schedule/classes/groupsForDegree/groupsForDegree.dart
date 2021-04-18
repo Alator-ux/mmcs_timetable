@@ -1,4 +1,4 @@
-import 'package:json_annotation/json_annotation.dart';
+/*import 'package:json_annotation/json_annotation.dart';
 import 'package:schedule/schedule/classes/group/group.dart';
 
 part 'groupsForDegree.g.dart';
@@ -22,4 +22,4 @@ class GroupsForDegree {
       'groups': jsonGroups,
     };
   }
-}
+}*/

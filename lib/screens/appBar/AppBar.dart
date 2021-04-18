@@ -139,6 +139,7 @@ class MyButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      //TODO попробовать заменить на InkWell
       onTap: onTap,
       child: Container(
         width: size,
