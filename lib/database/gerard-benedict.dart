@@ -184,9 +184,7 @@ class DBProvider {
 
   Future<List<Week>> getWeeks(int groupid) async {
     var normalLessons = await _getNormalLessons();
-    var lessons =
-        normalLessons.where((lesson) => lesson.groupid == groupid).toList();
-    lessons.isEmpty;
+    var lessons = normalLessons.where((lesson) => lesson.groupid == groupid);
     if (lessons.isEmpty) {
       return [];
     }

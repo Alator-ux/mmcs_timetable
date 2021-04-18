@@ -18,7 +18,8 @@ class Week {
 
   Week(Schedule schedule, String typeOfWeek, int groupID) {
     days = [];
-    //
+    //если пусто расписание пар для группы(которая определяется в generateweeks в entryPageProvider)
+    //т.е. если нет совсем ничего, возвращаем пустой список.
     if (schedule == null) {
       return;
     }

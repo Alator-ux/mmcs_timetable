@@ -109,9 +109,6 @@ class EntryPageProvider with ChangeNotifier {
           (group) async {
             int id = group.id;
             var schedule = await api.getSchedule(id);
-            if (id == 72) {
-              print('a');
-            }
             schedules[id] = schedule;
           },
         );
