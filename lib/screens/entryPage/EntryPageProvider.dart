@@ -156,24 +156,24 @@ class EntryPageProvider with ChangeNotifier {
 
   void changeGradeID(int newid) {
     currentGradeID = newid;
-    var progName = allgroups
-        .firstWhere((group) => group.first.gradeid == currentGradeID)
-        .first
-        .name;
+    var group = allgroups
+        .firstWhere((grade) => grade.any((gr) => gr.gradeid == currentGradeID))
+        .first;
+    changeGroup(group);
+    // var progName = allgroups
+    //     .firstWhere((group) => group.first.gradeid == currentGradeID)
+    //     .first
+    //     .name;
+  }
+
+  void changeGroup(Group group) {
+    currentGroup = group;
+    var progName = group.name;
     changeProgName(progName);
   }
 
   void changeProgName(String progName) {
     currentProgName = progName;
-    var group = allgroups
-        .firstWhere((grade) => grade.any(
-            (gr) => gr.gradeid == currentGradeID && gr.name == currentProgName))
-        .first;
-    changeGroup(group);
-  }
-
-  void changeGroup(Group group) {
-    currentGroup = group;
     notifyListeners();
   }
 
