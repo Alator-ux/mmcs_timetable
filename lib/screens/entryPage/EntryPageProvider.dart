@@ -109,6 +109,9 @@ class EntryPageProvider with ChangeNotifier {
           (group) async {
             int id = group.id;
             var schedule = await api.getSchedule(id);
+            if (id == 72) {
+              print('a');
+            }
             schedules[id] = schedule;
           },
         );
@@ -166,7 +169,8 @@ class EntryPageProvider with ChangeNotifier {
   void changeProgName(String progName) {
     currentProgName = progName;
     var group = allgroups
-        .firstWhere((grade) => grade.any((gr) => gr.name == currentProgName))
+        .firstWhere((grade) => grade.any(
+            (gr) => gr.gradeid == currentGradeID && gr.name == currentProgName))
         .first;
     changeGroup(group);
   }

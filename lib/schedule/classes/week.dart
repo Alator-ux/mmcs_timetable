@@ -18,6 +18,10 @@ class Week {
 
   Week(Schedule schedule, String typeOfWeek, int groupID) {
     days = [];
+    //
+    if (schedule == null) {
+      return;
+    }
     for (int i = 0; i < 7; i++) {
       List<Lesson> lessonByDay = [];
       for (var lesson in schedule.lessons) {
