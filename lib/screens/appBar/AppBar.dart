@@ -78,6 +78,32 @@ class MyAppBarHelp extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
+class EditPageAppBar extends StatelessWidget implements PreferredSizeWidget {
+  Size get preferredSize => const Size.fromHeight(50);
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.cyan[500],
+      centerTitle: true,
+      title: Text('РАСПИСАНИЕ ИММиКН'),
+      actions: [
+        FlatButton(
+          padding: EdgeInsets.symmetric(),
+          highlightColor: Colors.transparent,
+          onPressed: () {
+            showDialog<void>(
+                context: context, builder: (context) => EntryPageHelpDialog());
+          },
+          child: Icon(
+            Icons.help,
+            color: Colors.white,
+          ),
+        )
+      ],
+    );
+  }
+}
+
 //окно с информацией по навигации
 class HelpDialog extends StatelessWidget {
   @override

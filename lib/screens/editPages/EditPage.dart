@@ -14,7 +14,7 @@ class EditPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        // appBar: EditPageAppBar(),
+        appBar: EditPageAppBar(),
         body: EditColumn(dayID, lesson),
       ),
     );
@@ -53,7 +53,8 @@ class EditColumn extends StatelessWidget {
             textAlign: TextAlign.center,
             validator: (value) {
               if (value.isEmpty) return "Пожалуйста, заполните это поле!";
-              if (value.length > 50) return "Пожалуйста, сократите назвав";
+              if (value.length > 50) return "Пожалуйста, сократите назвавание";
+              return "";
             },
             decoration: formDecoration,
             keyboardType: TextInputType.name,
@@ -156,41 +157,20 @@ class EditColumn extends StatelessWidget {
           decoration: containerDecoration,
           child: Row(
             children: [
-              Flexible(
-                flex: 1,
-                child: TextFormField(
-                  textAlign: TextAlign.center,
-                  validator: (value) {
-                    if (value.isEmpty) return "Пожалуйста, заполните это поле!";
-                    if (value.length > 5)
-                      return "Пожалуйста, введите корректное время";
-                  },
-                  decoration: formDecoration,
-                  keyboardType: TextInputType.number,
-                  initialValue: lesson.time.beginHourAsString(),
-                  style: formTextStyle,
-                  onFieldSubmitted: (String value) {
-                    // lesson.time = IntervalOfTime.fromString(beginAsString, endAsString);
-                  },
-                ),
-              ),
-              Flexible(
-                flex: 1,
-                child: TextFormField(
-                  textAlign: TextAlign.center,
-                  validator: (value) {
-                    if (value.isEmpty) return "Пожалуйста, заполните это поле!";
-                    if (value.length > 5)
-                      return "Пожалуйста, введите корректное время";
-                  },
-                  decoration: formDecoration,
-                  keyboardType: TextInputType.streetAddress,
-                  initialValue: lesson.time.asString(),
-                  style: formTextStyle,
-                  onFieldSubmitted: (String value) {
-                    // lesson.time = IntervalOfTime.fromString(beginAsString, endAsString);
-                  },
-                ),
+              TextFormField(
+                textAlign: TextAlign.center,
+                validator: (value) {
+                  if (value.isEmpty) return "Пожалуйста, заполните это поле!";
+                  if (value.length > 5)
+                    return "Пожалуйста, введите корректное время";
+                },
+                decoration: formDecoration,
+                keyboardType: TextInputType.number,
+                initialValue: lesson.time.asString(),
+                style: formTextStyle,
+                onFieldSubmitted: (String value) {
+                  // lesson.time = IntervalOfTime.fromString(beginAsString, endAsString);
+                },
               ),
             ],
           ),
