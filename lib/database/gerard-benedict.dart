@@ -224,6 +224,8 @@ class DBProvider {
     return res;
   }
 
+  void changeNormalLesson(NormalLesson lesson) {}
+
   Future<bool> refreshDb() async {
     bool databaseDeleted = false;
 

@@ -5,12 +5,9 @@ import 'package:schedule/schedule/classes/week.dart';
 
 class SubjectProvider with ChangeNotifier {
   // final DBProvider db = DBProvider.db;
-  TextStyle textStyle;
   List<Week> weeks;
-  int dayIDToChange;
   int curDay = DateTime.now().weekday - 1;
   int curWeek = 0;
-  double screenWidth;
   SubjectProvider();
   SubjectProvider.first(this.weeks);
 

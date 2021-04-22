@@ -142,15 +142,15 @@ AlertDialog lessonInfo(BuildContext context, int ind, NormalLesson lesson) {
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            // FlatButton(
-            //   child: Text('Изменить'),
-            //   onPressed: () {
-            //     Navigator.push(
-            //         context,
-            //         MaterialPageRoute(
-            //             builder: (context) => EditPage(ind, lesson)));
-            //   },
-            // ),
+            FlatButton(
+              child: Text('Изменить'),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => EditPage(ind, lesson)));
+              },
+            ),
             FlatButton(
               child: Text('Ок'),
               onPressed: () {
