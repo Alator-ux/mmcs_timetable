@@ -51,6 +51,7 @@ class EditColumn extends StatelessWidget {
           decoration: containerDecoration,
           child: TextFormField(
             textAlign: TextAlign.center,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             validator: (value) {
               if (value.isEmpty) return "Пожалуйста, заполните это поле!";
               if (value.length > 50) return "Пожалуйста, сократите назвавание";
@@ -61,10 +62,11 @@ class EditColumn extends StatelessWidget {
             initialValue: lesson.subjectname,
             style: formTextStyle,
             onFieldSubmitted: (String value) {
-              lesson.subjectname = value;
+              // lesson.subjectname = value;
             },
           ),
         ),
+        Box(),
         Center(
           child: Column(
             children: [
@@ -92,6 +94,7 @@ class EditColumn extends StatelessWidget {
             },
           ),
         ),
+        Box(),
         Center(
           child: Column(
             children: [
@@ -119,6 +122,7 @@ class EditColumn extends StatelessWidget {
             },
           ),
         ),
+        Box(),
         Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -147,6 +151,7 @@ class EditColumn extends StatelessWidget {
             },
           ),
         ),
+        Box(),
         Center(
           child: Text(
             'Время проведения',
@@ -155,24 +160,26 @@ class EditColumn extends StatelessWidget {
         ),
         Container(
           decoration: containerDecoration,
-          child: Row(
-            children: [
-              TextFormField(
-                textAlign: TextAlign.center,
-                validator: (value) {
-                  if (value.isEmpty) return "Пожалуйста, заполните это поле!";
-                  if (value.length > 5)
-                    return "Пожалуйста, введите корректное время";
-                },
-                decoration: formDecoration,
-                keyboardType: TextInputType.number,
-                initialValue: lesson.time.asString(),
-                style: formTextStyle,
-                onFieldSubmitted: (String value) {
-                  // lesson.time = IntervalOfTime.fromString(beginAsString, endAsString);
-                },
-              ),
-            ],
+          child: TextFormField(
+            textAlign: TextAlign.center,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            validator: (value) {
+              if (value.isEmpty) return "Пожалуйста, заполните это поле!";
+              // if (value.length > 5)
+              RegExp regExp = new RegExp(
+                r"\b(([0-1]?[0-9]|2[0-3]):[0-5][0-9]) ?- ?(([0-1]?[0-9]|2[0-3]):[0-5][0-9])\b",
+              );
+              if (!regExp.hasMatch(value))
+                return "Пожалуйста, введите корректное время формата HH:MM - HH:MM";
+              return null;
+            },
+            decoration: formDecoration,
+            keyboardType: TextInputType.number,
+            initialValue: lesson.time.asString(),
+            style: formTextStyle,
+            onFieldSubmitted: (String value) {
+              // lesson.time = IntervalOfTime.fromString(beginAsString, endAsString);
+            },
           ),
         ),
       ],
@@ -204,4 +211,13 @@ BoxDecoration wrapperDecoration() {
 
 TextStyle titleTStyle(double width) {
   return TextStyle(fontSize: width / 20, fontWeight: FontWeight.bold);
+}
+
+class Box extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 30,
+    );
+  }
 }
