@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io' as io;
 
 import 'package:flutter/cupertino.dart';
@@ -7,7 +8,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:schedule/api/api_service.dart';
 import 'package:schedule/connectivity/connectivity_service.dart';
 import 'package:schedule/database/gerard-benedict.dart';
+import 'package:schedule/schedule/classes/enums.dart';
 import 'package:schedule/schedule/classes/import_classes.dart';
+import 'package:schedule/schedule/classes/teacher/teacher.dart';
 import 'package:schedule/schedule/classes/week.dart';
 import 'package:path/path.dart';
 
@@ -15,6 +18,7 @@ class EntryPageProvider with ChangeNotifier {
   final api = RestClient.create();
   final connectivity = ConnectivityService();
   DBProvider db = DBProvider.db;
+  StreamSubscription _streamSubscription;
   bool dbFilled = true;
   int currentGradeID = 0;
   String currentProgName = '-';
@@ -23,8 +27,10 @@ class EntryPageProvider with ChangeNotifier {
   List<List<Group>> allgroups = [];
   Map<int, Schedule> schedules = Map<int, Schedule>();
   List<Week> weeks;
+  List<Teacher> teachers = [];
+  Teacher currentTeacher = Teacher(id: 0, name: "-");
   bool isOnline = false;
-  StreamSubscription _streamSubscription;
+  UserType userType = UserType.student;
 
   EntryPageProvider() {
     connectivity.currentStatus
@@ -56,16 +62,11 @@ class EntryPageProvider with ChangeNotifier {
     }
   }
 
-  void noConnectionSnackBar(BuildContext context) {
-    Scaffold.of(context).showSnackBar(
-        SnackBar(content: Text("Отсутствует подключение к интернету")));
-  }
-
   void refresh(BuildContext context) async {
     if (isOnline) {
       await _fillGradesFromApi();
     } else {
-      noConnectionSnackBar(context);
+      // noConnectionSnackBar(context);
     }
   }
 
@@ -73,6 +74,7 @@ class EntryPageProvider with ChangeNotifier {
     grades = [];
     allgroups = [];
     schedules = Map<int, Schedule>();
+    teachers = [];
 
     grades = await db.getAllGrades();
     List<int> gradeid = [];
@@ -84,6 +86,7 @@ class EntryPageProvider with ChangeNotifier {
     );
     allgroups = await db.getAllGroups(gradeid);
     schedules = await db.getMap();
+    teachers = await api.getTeachers(); //TODO delete
     changeGradeID(grades.first.id);
   }
 
@@ -93,6 +96,8 @@ class EntryPageProvider with ChangeNotifier {
     schedules = Map<int, Schedule>();
     dbFilled = false;
     grades = await api.getGrades();
+    teachers = await api.getTeachers();
+
     await Future.forEach(
       grades,
       (grade) async {
@@ -138,9 +143,9 @@ class EntryPageProvider with ChangeNotifier {
           weeks = value;
           return;
         } else {
-          var week = Week(schedules[currentGroup.id], 'lower', currentGroup.id);
+          var week = Week(schedules[currentGroup.id], TypeOfWeek.lower);
           weeks.add(week);
-          week = Week(schedules[currentGroup.id], 'upper', currentGroup.id);
+          week = Week(schedules[currentGroup.id], TypeOfWeek.upper);
           weeks.add(week);
           await db.fillWeeks(weeks);
         }
@@ -173,6 +178,16 @@ class EntryPageProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void changeUserType(UserType newUserType) {
+    userType = newUserType;
+    notifyListeners();
+  }
+
+  void changeTeacher(Teacher teacher) {
+    currentTeacher = teacher;
+    notifyListeners();
+  }
+
   List<Group> _groupsOfCurGrade() {
     return allgroups.firstWhere(
         (listOfGroup) => listOfGroup.first.gradeid == currentGradeID);
@@ -184,7 +199,6 @@ class EntryPageProvider with ChangeNotifier {
     return progs;
   }
 
-  ///Ну ладно
   List<Group> get currentGroups {
     var groups = _groupsOfCurGrade();
     var res = groups.where((group) => group.name == currentProgName);
@@ -201,5 +215,9 @@ class EntryPageProvider with ChangeNotifier {
 
   bool get canGetSchedule {
     return !(schedules.isEmpty || !dbFilled);
+  }
+
+  bool get canShowTeachers {
+    return teachers.isNotEmpty || teachers.first.id != 0;
   }
 }

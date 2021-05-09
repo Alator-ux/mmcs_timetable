@@ -1,13 +1,11 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:schedule/schedule/classes/curricula/curricula.dart';
-import 'package:schedule/schedule/classes/groupsForDegree/groupsForDegree.dart';
+import 'package:schedule/schedule/classes/enums.dart';
 import 'package:schedule/schedule/classes/lesson/lesson.dart';
 import 'package:schedule/schedule/classes/normalLesson/normalLesson.dart';
 import 'package:schedule/schedule/classes/time.dart';
 import 'package:schedule/schedule/classes/week.dart';
-import 'package:schedule/schedule/test_values/test_values.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:schedule/schedule/classes/import_classes.dart';
@@ -26,7 +24,7 @@ class DBProvider {
   }
 
   initDB() async {
-    Directory documentsDirectory = await getApplicationDocumentsDirectory(); //
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, dbname);
     return await openDatabase(path, version: 1, onOpen: (db) {},
         onCreate: (Database db, int version) async {
@@ -73,16 +71,16 @@ class DBProvider {
     });
   }
 
-  getNormalLesson(int gr_id) async {
+  getNormalLesson(int grId) async {
     final db = await database;
-    return db.query("NormalLesson", where: ("groupid = ${gr_id}"));
+    return db.query("NormalLesson", where: ("groupid = $grId"));
   }
 
-  _clearNormalLessonTable(int group_id) async {
+  _clearNormalLessonTable(int groupId) async {
     final db = await database;
     // var res = await db.delete("NormalLesson", where: groupid == group_id);
-    var res = await db
-        .rawDelete("DELETE FROM NormalLesson WHERE groupid = $group_id");
+    var res =
+        await db.rawDelete("DELETE FROM NormalLesson WHERE groupid = $groupId");
     return res;
   }
 
@@ -189,8 +187,10 @@ class DBProvider {
       return [];
     }
     List<Week> res = [Week.fromDB(), Week.fromDB()];
-    var lowerlessons = lessons.where((lesson) => lesson.typeOfWeek == "lower");
-    var upperlessons = lessons.where((lesson) => lesson.typeOfWeek == "upper");
+    var lowerlessons =
+        lessons.where((lesson) => lesson.typeOfWeek == TypeOfWeek.lower);
+    var upperlessons =
+        lessons.where((lesson) => lesson.typeOfWeek == TypeOfWeek.upper);
     for (int i = 0; i < 7; i++) {
       var lowdaylessons =
           lowerlessons.where((lesson) => lesson.dayid == i).toList();
