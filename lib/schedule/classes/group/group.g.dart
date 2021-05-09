@@ -12,6 +12,7 @@ Group _$GroupFromJson(Map<String, dynamic> json) {
     name: json['name'] as String,
     n: json['num'] as int,
     gradeid: json['gradeid'] as int,
+    uberid: json['uberid'] as int,
   );
 }
 
@@ -20,4 +21,5 @@ Map<String, dynamic> _$GroupToJson(Group instance) => <String, dynamic>{
       'name': instance.name,
       'num': instance.n,
       'gradeid': instance.gradeid,
+      'uberid': instance.uberid,
     };

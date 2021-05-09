@@ -16,6 +16,7 @@ Lesson _$LessonFromJson(Map<String, dynamic> json, int groupID) {
     day: indOfDay,
     id: json['id'] as int,
     groupid: groupID,
+    uberid: json['uberid'] as int,
     typeOfWeek: tweek,
   );
 }
@@ -31,6 +32,7 @@ Lesson _$LessonFromJsonFromDB(Map<String, dynamic> json) {
     day: indOfDay,
     id: json['id'] as int,
     groupid: json['groupid'] as int,
+    uberid: json['uberid'] as int,
     typeOfWeek: json['typeOfWeek'] as String,
   );
 }
@@ -42,6 +44,7 @@ Map<String, dynamic> _$LessonToJson(Lesson instance) {
     'day': instance.day,
     'id': instance.id,
     'groupid': instance.groupid,
+    'uberid': instance.uberid,
     'typeOfWeek': instance.typeOfWeek,
   };
 }

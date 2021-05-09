@@ -1,21 +1,19 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'subject.dart';
+part of 'teacher.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-Subject _$SubjectFromJson(Map<String, dynamic> json) {
-  return Subject(
+Teacher _$TeacherFromJson(Map<String, dynamic> json) {
+  return Teacher(
     id: json['id'] as int,
     name: json['name'] as String,
-    abbr: json['abbr'] as int,
   );
 }
 
-Map<String, dynamic> _$SubjectToJson(Subject instance) => <String, dynamic>{
+Map<String, dynamic> _$TeacherToJson(Teacher instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
-      'abbr': instance.abbr,
     };

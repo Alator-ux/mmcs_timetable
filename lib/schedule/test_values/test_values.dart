@@ -1,7 +1,6 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:schedule/schedule/classes/import_classes.dart';
+import 'package:schedule/schedule/classes/teacher/teacher.dart';
 import 'package:schedule/screens/entryPage/EntryPageProvider.dart';
 
 class Pair<FT, ST> {
@@ -85,6 +84,32 @@ List<DropdownMenuItem<Group>> groupItems(EntryPageProvider provider) {
           group.n.toString(),
           // textAlign: TextAlign.center,
         ),
+      ),
+    );
+  }).toList();
+}
+
+List<DropdownMenuItem<Teacher>> teacherItems(EntryPageProvider provider) {
+  if (!provider.canShowTeachers) {
+    return [
+      DropdownMenuItem<Teacher>(
+        value: Teacher(id: 0, name: ""),
+        child: Text('-'),
+      )
+    ];
+  }
+
+  var res = provider.teachers;
+
+  return res.map((Teacher teacher) {
+    return DropdownMenuItem<Teacher>(
+      value: teacher,
+      // child: FittedBox(
+      //   fit: BoxFit.fill,
+      child: Text(
+        teacher.name,
+        // textAlign: TextAlign.center,
+        // ),
       ),
     );
   }).toList();

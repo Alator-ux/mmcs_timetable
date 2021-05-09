@@ -1,15 +1,35 @@
-enum TypeWeek { upper, lower }
+enum TypeOfWeek { lower, upper }
 
-extension WeekConverter on TypeWeek {
+extension ToWConverter on TypeOfWeek {
   String asString() {
     switch (this) {
-      case TypeWeek.upper:
+      case TypeOfWeek.upper:
         return "Верхняя";
-      case TypeWeek.lower:
+      case TypeOfWeek.lower:
         return "Нижняя";
     }
     return "";
   }
+
+  String toJsonString() {
+    switch (this) {
+      case TypeOfWeek.upper:
+        return "upper";
+      case TypeOfWeek.lower:
+        return "lower";
+    }
+    return "";
+  }
+}
+
+TypeOfWeek typeOfWeekFromString(String typeOfWeek) {
+  switch (typeOfWeek) {
+    case "upper":
+      return TypeOfWeek.upper;
+    case "lower":
+      return TypeOfWeek.lower;
+  }
+  return TypeOfWeek.lower;
 }
 
 enum DaysOfWeek { mon, tue, wed, thr, fri, sat, sun }
@@ -31,6 +51,20 @@ extension DWConverter on DaysOfWeek {
         return "Суббота";
       case DaysOfWeek.sun:
         return "Воскресенье";
+    }
+    return "";
+  }
+}
+
+enum UserType { student, teacher }
+
+extension UTConverter on UserType {
+  String asString() {
+    switch (this) {
+      case UserType.student:
+        return "Студент";
+      case UserType.teacher:
+        return "Преподаватель";
     }
     return "";
   }
