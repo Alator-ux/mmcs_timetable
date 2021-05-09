@@ -17,8 +17,7 @@ dependencies:
   provider: any
   connectivity: ^3.0.3 
   flutter_local_notifications: ^5.0.0+4
-  #удалить native timezone когда разберусь с его заменой
-  #flutter_native_timezone: ^1.0.10
+  
 
 dev_dependencies:
   retrofit_generator: ^1.4.1

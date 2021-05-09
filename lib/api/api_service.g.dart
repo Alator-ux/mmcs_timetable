@@ -92,7 +92,8 @@ class _RestClient implements RestClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    final value = Schedule.fromJson(_result.data, lessonID);
+    final value = Schedule.fromJson(
+        _result.data, lessonID); //приведет к ошибке, удалить этот метод
     return value;
   }
 
@@ -116,12 +117,11 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<Subject> getSubjects() async {
+  Future<List<Teacher>> getTeachers() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result = await _dio.request<Map<String, dynamic>>(
-        'APIv0/subject/list',
+    final _result = await _dio.request<List<dynamic>>('APIv0/teacher/list',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'GET',
@@ -129,7 +129,28 @@ class _RestClient implements RestClient {
             extra: _extra,
             baseUrl: baseUrl),
         data: _data);
-    final value = Subject.fromJson(_result.data);
+    var value = _result.data
+        .map((dynamic i) => Teacher.fromJson(i as Map<String, dynamic>))
+        .toList();
+    return value;
+  }
+
+  @override
+  Future<Schedule> getScheduleOfTeacher(int teacherID) async {
+    ArgumentError.checkNotNull(teacherID, 'teacherID');
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.request<Map<String, dynamic>>(
+        'APIv0/schedule/group/$teacherID',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'GET',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = Schedule.fromJsonForTeacher(_result.data);
     return value;
   }
 }

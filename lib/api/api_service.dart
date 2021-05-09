@@ -1,6 +1,7 @@
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart';
 import 'package:schedule/schedule/classes/import_classes.dart';
+import 'package:schedule/schedule/classes/teacher/teacher.dart';
 
 part 'api_service.g.dart';
 
@@ -29,6 +30,9 @@ abstract class RestClient {
   @GET("APIv0/schedule/group/{groupID}")
   Future<Schedule> getSchedule(@Path("groupID") int groupID);
 
-  @GET("APIv0/subject/list")
-  Future<Subject> getSubjects();
+  @GET("APIv0/teacher/list")
+  Future<List<Teacher>> getTeachers();
+
+  @GET("APIv1/schedule/teacher/{teacherID}")
+  Future<Schedule> getScheduleOfTeacher(@Path("teacherID") int teacherID);
 }
