@@ -1,8 +1,6 @@
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
-import 'package:schedule/schedule/classes/curricula/curricula.dart';
 import 'package:schedule/schedule/classes/enums.dart';
-import 'package:schedule/schedule/classes/lesson/lesson.dart';
 import 'package:schedule/schedule/classes/normalLesson/normalLesson.dart';
 import 'package:schedule/schedule/classes/time.dart';
 import 'package:schedule/schedule/classes/week.dart';
@@ -57,9 +55,22 @@ class DBProvider {
           "roomid INTEGER,"
           "roomname Text"
           ")");
+      await db.execute("CREATE TABLE Groups ("
+          "updateable INTEGER,"
+          "id INTEGER,"
+          "name TEXT,"
+          "num INTEGER,"
+          "gradeid INTEGER,"
+          "uberid INTEGER,"
+          "degree TEXT,"
+          "gradenum INTEGER,"
+          "groupnum INTEGER"
+          ")");
       await db.execute("CREATE TABLE NormalLesson ("
+          "updateable INTEGER,"
           "lessonid INTEGER,"
           "groupid INTEGER,"
+          "uberid INTEGER,"
           "typeOfWeek Text,"
           "dayid INTEGER,"
           "time Text,"
@@ -76,113 +87,72 @@ class DBProvider {
     return db.query("NormalLesson", where: ("groupid = $grId"));
   }
 
-  _clearNormalLessonTable(int groupId) async {
+  getNormalLessonUber(int uberid) async {
     final db = await database;
-    // var res = await db.delete("NormalLesson", where: groupid == group_id);
+    return db.query("NormalLesson", where: ("groupid = $uberid"));
+  }
+
+  getGroup(int grId) async {
+    final db = await database;
+    return db.query("Groups", where: ("groupid = $grId"));
+  }
+
+  Future<List<NormalLesson>> getNormalLessons(int updateableInd) async {
+    final db = await database;
     var res =
-        await db.rawDelete("DELETE FROM NormalLesson WHERE groupid = $groupId");
-    return res;
-  }
-
-  newNormalLesson(NormalLesson normalLesson) async {
-    final db = await database;
-    var nj = normalLesson.toJson();
-    var res = await db.insert("NormalLesson", nj);
-    return res;
-  }
-
-  Future<List<NormalLesson>> _getNormalLessons() async {
-    final db = await database;
-    var res = await db.query("NormalLesson");
+        await db.query("NormalLesson", where: ("updateable = $updateableInd"));
     List<NormalLesson> list =
         res.isNotEmpty ? res.map((c) => NormalLesson.fromJson(c)).toList() : [];
     return list;
   }
 
-  newLesson(Lesson lesson) async {
+  Future<List<Group>> getGroups(int updateableInd) async {
     final db = await database;
-    var res = await db.insert("Lesson", lesson.toJson());
-    return res;
-  }
-
-  Future<List<Lesson>> _getLessons() async {
-    final db = await database;
-    var res = await db.query("Lesson");
-    List<Lesson> list =
-        res.isNotEmpty ? res.map((c) => Lesson.fromJsonFromDB(c)).toList() : [];
-    return list;
-  }
-
-  newCurricula(Curricula curricula) async {
-    final db = await database;
-    var res = await db.insert("Curricula", curricula.toJson());
-    return res;
-  }
-
-  Future<List<Curricula>> _getCurricula() async {
-    final db = await database;
-    var res = await db.query("Curricula");
-    List<Curricula> list =
-        res.isNotEmpty ? res.map((c) => Curricula.fromJson(c)).toList() : [];
-    return list;
-  }
-
-  newGrade(Grade newGrade) async {
-    final db = await database;
-    var res = await db.insert("Grade", newGrade.toJson());
-    return res;
-  }
-
-  Future<List<Grade>> getAllGrades() async {
-    final db = await database;
-    var res = await db.query("Grade");
-    List<Grade> list =
-        res.isNotEmpty ? res.map((c) => Grade.fromJson(c)).toList() : [];
-    return list;
-  }
-
-  newAllGroups(Group group) async {
-    final db = await database;
-    var res = await db.insert("AllGroups", group.toJson());
-    return res;
-  }
-
-  Future<List<Group>> _getAllGroups() async {
-    final db = await database;
-    var res = await db.query("AllGroups");
+    var res = await db.query("Groups", where: ("updateable = $updateableInd"));
     List<Group> list =
         res.isNotEmpty ? res.map((c) => Group.fromJson(c)).toList() : [];
     return list;
   }
 
-  Future<Map<int, Schedule>> getMap() async {
-    var lessons = await _getLessons();
-    var curricula = await _getCurricula();
-    var groupid = lessons.map((lesson) => lesson.groupid).toSet();
-    var res = Map<int, Schedule>();
-    groupid.forEach(
-      (id) {
-        var lessonsWithID =
-            lessons.where((lesson) => lesson.groupid == id).toList();
-        List<Curricula> tempCurricula = [];
-        lessonsWithID.forEach(
-          (lesson) {
-            var cur = curricula.firstWhere((c) => c.lessonid == lesson.id);
-            tempCurricula.add(cur);
-          },
-        );
-        var schedule =
-            Schedule(lessons: lessonsWithID, curricula: tempCurricula);
-        res[id] = schedule;
-      },
-    );
+  getGroupUber(int uberid) async {
+    final db = await database;
+    return db.query("Groups", where: ("groupid = $uberid"));
+  }
 
+  newGroup(Group gr, int updInd) async {
+    final db = await database;
+    var json = gr.toJson();
+    json['updateable'] = updInd;
+    var res = await db.insert("Groups", json);
     return res;
   }
 
-  Future<List<Week>> getWeeks(int groupid) async {
-    var normalLessons = await _getNormalLessons();
-    var lessons = normalLessons.where((lesson) => lesson.groupid == groupid);
+  newNormalLesson(NormalLesson normalLesson, int updInd) async {
+    final db = await database;
+    var json = normalLesson.toJson();
+    json['updateable'] = updInd;
+    var res = await db.insert("NormalLesson", json);
+    return res;
+  }
+
+  refreshNormalLesson(List<NormalLesson> lessons) async {
+    final db = await database;
+    db.rawDelete("DELETE FROM NormalLesson WHERE id = ${1}");
+    await Future.forEach(lessons, (lesson) async {
+      await newNormalLesson(lesson, 1);
+    });
+  }
+
+  refreshGroup(List<Group> groups) async {
+    final db = await database;
+    db.rawDelete("DELETE FROM Groups WHERE updateable = ${1}");
+    await Future.forEach(groups, (group) async {
+      await newGroup(group, 1);
+    });
+  }
+
+  Future<List<Week>> getWeeksForStudent() async {
+    var lessons = await getNormalLessons(1);
     if (lessons.isEmpty) {
       return [];
     }
@@ -209,22 +179,44 @@ class DBProvider {
     return res;
   }
 
-  Future<List<List<Group>>> getAllGroups(List<int> gradeid) async {
-    var allgroups = await _getAllGroups();
-    // var listid = await _getAllGroups();
-    // print(groups.length);
-    // print(id.length);
-    List<List<Group>> res = [];
-    gradeid.forEach(
-      (id) {
-        var groups = allgroups.where((group) => group.gradeid == id).toList();
-        res.add(groups);
-      },
-    );
+  Future<List<Week>> getWeeksForTeacher() async {
+    var lessons = await getNormalLessons(1);
+    var groups = await getGroups(1);
+    if (lessons.isEmpty) {
+      return [];
+    }
+
+    for (int i = 0; i < lessons.length; i++) {
+      var gr = groups
+          .where((group) => group.uberid == lessons[i].uberid)
+          .toSet()
+          .toList();
+      lessons[i].groups = gr;
+    }
+
+    List<Week> res = [Week.fromDB(), Week.fromDB()];
+    var lowerlessons =
+        lessons.where((lesson) => lesson.typeOfWeek == TypeOfWeek.lower);
+    var upperlessons =
+        lessons.where((lesson) => lesson.typeOfWeek == TypeOfWeek.upper);
+    for (int i = 0; i < 7; i++) {
+      var lowdaylessons =
+          lowerlessons.where((lesson) => lesson.dayid == i).toList();
+      lowdaylessons.sort(
+        (l1, l2) => IntervalOfTime.compare(l1.time, l2.time),
+      );
+
+      var updaylessons =
+          upperlessons.where((lesson) => lesson.dayid == i).toList();
+      updaylessons.sort(
+        (l1, l2) => IntervalOfTime.compare(l1.time, l2.time),
+      );
+
+      res[0].days[i].normalLessons = lowdaylessons;
+      res[1].days[i].normalLessons = updaylessons;
+    }
     return res;
   }
-
-  void changeNormalLesson(NormalLesson lesson) {}
 
   Future<bool> refreshDb() async {
     bool databaseDeleted = false;
@@ -250,49 +242,6 @@ class DBProvider {
     return databaseDeleted;
   }
 
-  fillGradeTable(List<Grade> grades) async {
-    await Future.forEach(
-      grades,
-      (grade) async {
-        await newGrade(grade);
-      },
-    );
-  }
-
-  fillAllGroupTable(List<List<Group>> allgroups) async {
-    await Future.forEach(
-      allgroups,
-      (groups) async {
-        await Future.forEach(
-          groups,
-          (group) async {
-            await newAllGroups(group);
-          },
-        );
-      },
-    );
-  }
-
-  fillSchedule(Map<int, Schedule> schedules) async {
-    await Future.forEach(
-      schedules.keys,
-      (groupid) async {
-        await Future.forEach(
-          schedules[groupid].lessons,
-          (lesson) async {
-            await newLesson(lesson);
-          },
-        );
-        await Future.forEach(
-          schedules[groupid].curricula,
-          (cur) async {
-            await newCurricula(cur);
-          },
-        );
-      },
-    );
-  }
-
   fillWeeks(List<Week> weeks) async {
     await Future.forEach(
       weeks,
@@ -303,7 +252,50 @@ class DBProvider {
             await Future.forEach(
               day.normalLessons,
               (normalLesson) async {
-                await newNormalLesson(normalLesson);
+                await newNormalLesson(normalLesson, 0);
+                await newNormalLesson(normalLesson, 1);
+                var groups = normalLesson.groups;
+                if (groups != null) {
+                  await Future.forEach(groups, (group) async {
+                    await newGroup(group, 0);
+                    await newGroup(group, 1);
+                  });
+                }
+              },
+            );
+          },
+        );
+      },
+    );
+    // await Future.forEach(
+    //   groups,
+    //   (group) async {
+    //     await newGroup(group, 0);
+    //     await newGroup(group, 1);
+    //   },
+    // );
+  }
+
+  refreshWeeks(List<Week> weeks) async {
+    final db = await database;
+    // db.update(table, values)
+
+    db.rawDelete("DELETE FROM NormalLesson WHERE updateable = ${1}");
+    db.rawDelete("DELETE FROM Groups WHERE updateable = ${1}");
+    await Future.forEach(
+      weeks,
+      (week) async {
+        await Future.forEach(
+          week.days,
+          (day) async {
+            await Future.forEach(
+              day.normalLessons,
+              (normalLesson) async {
+                await newNormalLesson(normalLesson, 1);
+                var groups = normalLesson.groups;
+                if (groups != null) {
+                  await newGroup(normalLesson.groups, 1);
+                }
               },
             );
           },
