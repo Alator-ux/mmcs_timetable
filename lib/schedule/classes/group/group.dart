@@ -33,4 +33,47 @@ class Group {
     }
     return '$gradenum.$groupnum ($name)';
   }
+
+  bool isEqual(Group other) {
+    var res = true;
+    res = res && id == other.id;
+    res = res && name == other.name;
+    res = res && n == other.n;
+    res = res && gradeid == other.gradeid;
+    res = res && uberid == other.uberid;
+    res = res && degree == other.degree;
+    res = res && gradenum == other.gradenum;
+    res = res && groupnum == other.groupnum;
+    return res;
+  }
+
+  static List<Group> groupsFromString(String groupsAsString, int uberid) {
+    List<Group> res = [];
+    if (groupsAsString == "") {
+      return res;
+    }
+    var groupsAsStrings = groupsAsString.split(',');
+    for (var groupAsString in groupsAsStrings) {
+      if (groupAsString == "") {
+        continue;
+      }
+      groupAsString = groupAsString.replaceAll(' ', '');
+      var gradenum = int.parse(groupAsString[0]);
+      var firstBracketInd = groupAsString.indexOf('(');
+      var groupnum = int.parse(groupAsString.substring(1, firstBracketInd));
+      var secondBracketInd = groupAsString.indexOf(')');
+      var name = groupAsString.substring(firstBracketInd + 1, secondBracketInd);
+      var newGroup = Group(
+          degree: '',
+          gradeid: 0,
+          gradenum: gradenum,
+          groupnum: groupnum,
+          id: 0,
+          n: 0,
+          name: name,
+          uberid: uberid);
+      res.add(newGroup);
+    }
+    return res;
+  }
 }

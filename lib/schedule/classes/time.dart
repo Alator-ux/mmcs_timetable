@@ -44,6 +44,13 @@ class IntervalOfTime {
     return this.end.toString().substring(10, 15);
   }
 
+  bool isEqual(IntervalOfTime other) {
+    var res = true;
+    res = res && begin == other.begin;
+    res = res && end == other.end;
+    return res;
+  }
+
   static int compare(IntervalOfTime t1, IntervalOfTime t2) {
     if (t1.begin.hour > t2.begin.hour) {
       return 1;
@@ -90,7 +97,14 @@ class IntervalOfTime {
     return TimeOfDay(hour: dateTime.hour, minute: dateTime.minute);
   }
 
-  //TODO bool isCrossed(IntervalOfTime other) {}
+  bool isCrossed(IntervalOfTime other) {
+    if (begin.hour == other.end.hour) if (begin.minute < other.begin.minute)
+      return true;
+
+    if (begin.hour > other.begin.hour) return true;
+
+    return false;
+  }
 }
 
 bool areTimesCorrect(TimeOfDay begin, TimeOfDay end) {

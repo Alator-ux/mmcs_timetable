@@ -142,7 +142,7 @@ class _RestClient implements RestClient {
     final queryParameters = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result = await _dio.request<Map<String, dynamic>>(
-        'APIv0/schedule/group/$teacherID',
+        'APIv1/schedule/teacher/$teacherID',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'GET',
@@ -151,6 +151,23 @@ class _RestClient implements RestClient {
             baseUrl: baseUrl),
         data: _data);
     final value = Schedule.fromJsonForTeacher(_result.data);
+    return value;
+  }
+
+  @override
+  Future<int> getCurrentWeek() async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result = await _dio.request<Map<String, dynamic>>('APIv0/time/week',
+        queryParameters: queryParameters,
+        options: RequestOptions(
+            method: 'GET',
+            headers: <String, dynamic>{},
+            extra: _extra,
+            baseUrl: baseUrl),
+        data: _data);
+    final value = _result.data['type'];
     return value;
   }
 }

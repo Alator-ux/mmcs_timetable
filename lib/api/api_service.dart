@@ -7,12 +7,13 @@ part 'api_service.g.dart';
 
 @RestApi(baseUrl: "https://schedule.sfedu.ru/")
 abstract class RestClient {
+  static RestClient _instance;
   factory RestClient(Dio dio, {String baseUrl}) = _RestClient;
 
   static RestClient create() {
     final dio = Dio();
-    //dio.interceptors.add(PrettyDioLogger());
-    return RestClient(dio);
+    _instance ??= RestClient(dio);
+    return _instance;
   }
 
   @GET("/APIv1/grade/list")
@@ -35,4 +36,7 @@ abstract class RestClient {
 
   @GET("APIv1/schedule/teacher/{teacherID}")
   Future<Schedule> getScheduleOfTeacher(@Path("teacherID") int teacherID);
+
+  @GET("APIv0/time/week")
+  Future<int> getCurrentWeek();
 }

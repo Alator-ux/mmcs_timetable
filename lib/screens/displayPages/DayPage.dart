@@ -2,21 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:schedule/main.dart';
 import 'package:schedule/schedule/classes/day.dart';
+import 'package:schedule/schedule/classes/enums.dart';
 import 'package:schedule/screens/displayPages/subjectProvider.dart';
+import 'package:schedule/screens/settingsPage/settingsProvider.dart';
+import 'package:schedule/screens/updateProvider.dart';
 import 'WeekPage.dart';
 import '../appBar/AppBar.dart';
 
 class DayPage extends StatelessWidget {
-  SubjectProvider provider;
-  DayPage(this.provider);
+  static const String routeName = '/EntryPage/DayPage';
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: ChangeNotifierProvider.value(
-        value: provider,
-        child: DayPageHelper(),
-      ),
+    return ProviderInit();
+  }
+}
+
+class ProviderInit extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(
+          value: SubjectProvider(),
+        ),
+        ChangeNotifierProvider.value(
+          value: UpdateProvider(),
+        ),
+      ],
+      child: DayPageHelper(),
     );
   }
 }
@@ -28,26 +41,64 @@ class DayPageHelper extends StatefulWidget {
 
 class _DayPageHelperState extends State<DayPageHelper> {
   SubjectProvider provider;
+  UpdateProvider updProvider;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     provider = Provider.of<SubjectProvider>(context);
+    updProvider = Provider.of<UpdateProvider>(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBarHelp(),
-      body: PageView(
-        children: [Subjects(), WeekPage()],
+      body: Builder(builder: (context) {
+        // if (updProvider.needToUpdate) {
+        //   showDialog<void>(
+        //     context: context,
+        //     builder: (context) => AlertDialog(
+        //       title: Text('Доступно обновленное расписание'),
+        //       content: Text(
+        //           'Появилась новая версия выбранного расписания. Хотите ли вы его обновить? При обновлении текущее будет стерто.'),
+        //       actions: [
+        //         Row(
+        //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //           children: [
+        //             TextButton(
+        //               onPressed: () {
+        //                 Navigator.pop(context);
+        //               },
+        //               child: Text('Нет'),
+        //             ),
+        //             TextButton(
+        //               onPressed: () {
+        //                 provider.refresh(updProvider.apiWeeks,
+        //                     provider.userType, provider.currentWeek);
+        //               },
+        //               child: Text('Да'),
+        //             ),
+        //           ],
+        //         ),
+        //       ],
+        //     ),
+        //   );
+        // }
+        return PageView(
+          children: [Subjects(), WeekPage()],
+        );
+      }),
+      bottomNavigationBar: MyBottomBar(
+        currentWeek: provider.currentWeek,
+        selectedWeek: provider.selectedWeek,
       ),
-      bottomNavigationBar: MyBottomBar(provider.getCurrentWeek()),
     );
   }
 }
 
 class Subjects extends StatelessWidget {
+  static const String routeName = '/EntryPage/DayPage/Subjects';
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -62,8 +113,9 @@ List<Widget> subjectsInf(BuildContext context) {
   double width = SizeProvider().width;
   TextStyle _cardTextStyle = TextStyle(fontSize: width * 0.04);
   TextStyle _textStyle = TextStyle(fontSize: width * 0.04);
+  var userType = provider.userType;
   Day day = provider.currentDay;
-  if (day.normalLessons.length == 0) {
+  if (day.isEmpty) {
     return [
       Center(
         child: Padding(
@@ -75,19 +127,17 @@ List<Widget> subjectsInf(BuildContext context) {
             ),
             width: MediaQuery.of(context).size.width,
             height: 150,
-            child: Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.cyan[100],
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                width: double.infinity,
-                alignment: Alignment.center,
-                child: Text(
-                  'Сегодня пар нет',
-                  style: TextStyle(
-                      fontSize: width / 20, fontWeight: FontWeight.bold),
-                ),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.cyan[100],
+                borderRadius: BorderRadius.circular(15),
+              ),
+              width: double.infinity,
+              alignment: Alignment.center,
+              child: Text(
+                'Сегодня пар нет',
+                style: TextStyle(
+                    fontSize: width / 20, fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -172,7 +222,11 @@ List<Widget> subjectsInf(BuildContext context) {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(lesson.teachername, style: _textStyle),
+                        Text(
+                            userType == UserType.student
+                                ? lesson.teachername
+                                : lesson.groupsAsString(),
+                            style: _textStyle),
                         Text('Аудитория: ' + lesson.roomname,
                             style: _textStyle),
                       ],

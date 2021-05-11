@@ -73,7 +73,7 @@ class NormalLesson {
       groups: null, //вручную задать значение в бд
     );
   }
-  factory NormalLesson.empty(int dayid) {
+  factory NormalLesson.empty(int dayid, TypeOfWeek typeOfWeek) {
     return NormalLesson(
       lessonid: 0,
       dayid: dayid,
@@ -84,7 +84,7 @@ class NormalLesson {
       time: IntervalOfTime.fromOneString("08:00-09:35"),
       groupid: 0,
       groups: [],
-      typeOfWeek: TypeOfWeek.lower,
+      typeOfWeek: typeOfWeek,
       uberid: 0,
     );
   }
@@ -116,6 +116,33 @@ class NormalLesson {
     }
     var groupAsString = groups[groups.length - 1].asString();
     res += '$groupAsString';
+    return res;
+  }
+
+  bool isEqual(NormalLesson other) {
+    var res = true;
+    res = res && dayid == other.dayid;
+    res = res && groupid == other.groupid;
+    if (groups == null || other == null) {
+      return false;
+    } else if (groups.length != other.groups.length) {
+      return false;
+    }
+    for (int groupId = 0; groupId < groups.length; groupId++) {
+      var thisGroup = groups[groupId];
+      var otherGroup = other.groups[groupId];
+      if (!thisGroup.isEqual(otherGroup)) {
+        return false;
+      }
+    }
+    res = res && lessonid == other.lessonid;
+    res = res && roomname == other.roomname;
+    res = res && subjectabbr == other.subjectabbr;
+    res = res && subjectname == other.subjectname;
+    res = res && teachername == other.teachername;
+    res = res && time.isEqual(other.time);
+    res = res && typeOfWeek == other.typeOfWeek;
+    res = res && uberid == other.uberid;
     return res;
   }
 }

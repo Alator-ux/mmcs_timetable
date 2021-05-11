@@ -31,4 +31,18 @@ class Day {
   bool get isEmpty {
     return normalLessons.isEmpty;
   }
+
+  bool isEqual(Day other) {
+    if (normalLessons.length != other.normalLessons.length) {
+      return false;
+    }
+    for (int lessonInd = 0; lessonInd < normalLessons.length; lessonInd++) {
+      var thisLesson = normalLessons[lessonInd];
+      var otherLesson = other.normalLessons[lessonInd];
+      if (!thisLesson.isEqual(otherLesson)) {
+        return false;
+      }
+    }
+    return true;
+  }
 }

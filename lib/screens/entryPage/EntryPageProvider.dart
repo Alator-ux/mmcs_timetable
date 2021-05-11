@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io' as io;
 
 import 'package:flutter/cupertino.dart';
@@ -13,6 +12,7 @@ import 'package:schedule/schedule/classes/import_classes.dart';
 import 'package:schedule/schedule/classes/teacher/teacher.dart';
 import 'package:schedule/schedule/classes/week.dart';
 import 'package:path/path.dart';
+import 'package:schedule/screens/settingsPage/settingsProvider.dart';
 
 class EntryPageProvider with ChangeNotifier {
   final api = RestClient.create();
@@ -20,22 +20,23 @@ class EntryPageProvider with ChangeNotifier {
   DBProvider db = DBProvider.db;
   StreamSubscription _streamSubscription;
   bool dbFilled = true;
+  bool scheduleFilled = false;
   int currentGradeID = 0;
   String currentProgName = '-';
   Group currentGroup = Group(gradeid: 0, id: 0, n: 0, name: '-');
+  Schedule schedule;
   List<Grade> grades = [];
   List<List<Group>> allgroups = [];
-  Map<int, Schedule> schedules = Map<int, Schedule>();
   List<Week> weeks;
   List<Teacher> teachers = [];
   Teacher currentTeacher = Teacher(id: 0, name: "-");
   bool isOnline = false;
   UserType userType = UserType.student;
-
+  TypeOfWeek typeOfWeek;
   EntryPageProvider() {
     connectivity.currentStatus
         .then((value) => isOnline = value == ConnectionStatus.Online);
-    _streamSubscription = connectivity.ConnectionStatusController.stream.listen(
+    _streamSubscription = connectivity.listen(
       (event) {
         isOnline = event == ConnectionStatus.Online;
         notifyListeners();
@@ -51,15 +52,14 @@ class EntryPageProvider with ChangeNotifier {
   }
 
   Future<void> _fillGrades() async {
-    io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
-    String path = join(documentsDirectory.path, db.dbname);
-    if (await io.File(path).exists()) {
-      await _fillGradesFromDB();
-    } else {
-      if (isOnline) {
-        await _fillGradesFromApi();
-      }
-    }
+    await _fillGradesFromApi();
+    // if (await io.File(path).exists()) {
+    //   await _fillGradesFromDB();
+    // } else {
+    //   if (isOnline) {
+    //     await _fillGradesFromApi();
+    //   }
+    // }
   }
 
   void refresh(BuildContext context) async {
@@ -70,34 +70,36 @@ class EntryPageProvider with ChangeNotifier {
     }
   }
 
-  Future<void> _fillGradesFromDB() async {
-    grades = [];
-    allgroups = [];
-    schedules = Map<int, Schedule>();
-    teachers = [];
+  // Future<void> _fillGradesFromDB() async {
+  //   grades = [];
+  //   allgroups = [];
+  //   teachers = [];
 
-    grades = await db.getAllGrades();
-    List<int> gradeid = [];
-    await Future.forEach(
-      grades,
-      (grade) {
-        gradeid.add(grade.id);
-      },
-    );
-    allgroups = await db.getAllGroups(gradeid);
-    schedules = await db.getMap();
-    teachers = await api.getTeachers(); //TODO delete
-    changeGradeID(grades.first.id);
-  }
+  //   grades = await db.getAllGrades();
+  //   List<int> gradeid = [];
+  //   await Future.forEach(
+  //     grades,
+  //     (grade) {
+  //       gradeid.add(grade.id);
+  //     },
+  //   );
+  //   allgroups = await db.getAllGroups(gradeid);
+  //   teachers = await api.getTeachers(); //TODO delete
+  //   changeGradeID(grades.first.id);
+  // }
 
   Future<void> _fillGradesFromApi() async {
+    scheduleFilled = false;
     grades = [];
     allgroups = [];
-    schedules = Map<int, Schedule>();
-    dbFilled = false;
+    teachers = [];
+    // dbFilled = false;
     grades = await api.getGrades();
     teachers = await api.getTeachers();
-
+    if (teachers.first.name == "") {
+      teachers.removeAt(0);
+    }
+    currentTeacher = teachers.first;
     await Future.forEach(
       grades,
       (grade) async {
@@ -105,58 +107,77 @@ class EntryPageProvider with ChangeNotifier {
         allgroups.add(groups);
       },
     );
-
-    await Future.forEach(
-      allgroups,
-      (groups) async {
-        await Future.forEach(
-          groups,
-          (group) async {
-            int id = group.id;
-            var schedule = await api.getSchedule(id);
-            schedules[id] = schedule;
-          },
-        );
-      },
-    );
-
+    var typeOfWeekInd = await api.getCurrentWeek();
+    typeOfWeek = TypeOfWeek.values[typeOfWeekInd];
+    scheduleFilled = true;
     changeGradeID(grades.first.id);
-    await _fillDB();
+    // await _fillDB(); //TODO сделать заполнение в другом месте
   }
 
   Future<void> _fillDB() async {
     await db.refreshDb();
-    db = DBProvider.db;
-    await db.fillGradeTable(grades);
-    await db.fillAllGroupTable(allgroups);
-    await db.fillSchedule(schedules);
+    // await db.fillGradeTable(grades);
+    // await db.fillAllGroupTable(allgroups);
     dbFilled = true;
+    print('vse');
     notifyListeners();
   }
 
   Future<void> _generateWeeks() async {
-    //TODO если есть в бд, забираем,если нет - генерируем и пушим.
     weeks = [];
-    await db.getWeeks(currentGroup.id).then(
-      (value) async {
-        if (value.isNotEmpty) {
-          weeks = value;
-          return;
-        } else {
-          var week = Week(schedules[currentGroup.id], TypeOfWeek.lower);
-          weeks.add(week);
-          week = Week(schedules[currentGroup.id], TypeOfWeek.upper);
-          weeks.add(week);
-          await db.fillWeeks(weeks);
-        }
-      },
-    );
+    bool areWeeksOld = false;
+    int id = 0;
+    if (userType == UserType.student) {
+      id = currentGroup.id;
+      schedule = await api.getSchedule(id);
+      weeks = await db.getWeeksForStudent(1);
+    } else {
+      id = currentTeacher.id;
+      schedule = await api.getScheduleOfTeacher(id);
+      weeks = await db.getWeeksForTeacher(1);
+    }
+
+    var settings = SettingsProvider();
+    if (settings.isSaved) {
+      if (settings.userType == UserType.student &&
+          userType == UserType.student) {
+        areWeeksOld =
+            weeks.any((week) => week.days.any((day) => day //TODO firstwhere?
+                .normalLessons
+                .any((lesson) => lesson.groupid == currentGroup.id)));
+      } else if (settings.userType == UserType.teacher &&
+          userType == UserType.teacher) {
+        areWeeksOld = weeks.any((week) => week.days.any((day) => day
+            .normalLessons
+            .any((lesson) => lesson.teachername == currentTeacher.name)));
+      } else {
+        areWeeksOld = false;
+      }
+    }
+
+    //TODO сделать нормально
+
+    if (!areWeeksOld) {
+      settings.setUTandToW(
+          userType: userType, typeOfWeek: typeOfWeek, newId: id);
+      settings.overWrite = true;
+      weeks = [];
+    } else if (weeks.isNotEmpty) {
+      settings.overWrite = false;
+      return;
+    }
+
+    var week = Week(schedule, TypeOfWeek.lower);
+    weeks.add(week);
+    week = Week(schedule, TypeOfWeek.upper);
+    weeks.add(week);
+    print('');
+    // await db.fillWeeks(weeks);
   }
 
   Future<List<Week>> getCurrentSchedule() async {
     await _generateWeeks();
     return weeks;
-    //TODO getWeeks и проверку
   }
 
   void changeGradeID(int newid) {
@@ -214,10 +235,14 @@ class EntryPageProvider with ChangeNotifier {
   }
 
   bool get canGetSchedule {
-    return !(schedules.isEmpty || !dbFilled);
+    return schedule != null && dbFilled;
   }
 
   bool get canShowTeachers {
-    return teachers.isNotEmpty || teachers.first.id != 0;
+    if (teachers.isNotEmpty) {
+      return teachers.first.id != 0;
+    } else {
+      return false;
+    }
   }
 }

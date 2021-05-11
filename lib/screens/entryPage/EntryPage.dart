@@ -152,7 +152,9 @@ Widget nextButton(BuildContext context) {
       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
     ),
     onPressed: () async {
-      if (!provider.canShowGroups || !provider.dbFilled) {
+      if (!provider.canShowGroups ||
+          !provider.dbFilled ||
+          !provider.scheduleFilled) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text("Пожалуйста, подождите пару секунд"),
@@ -160,8 +162,10 @@ Widget nextButton(BuildContext context) {
         );
       } else {
         var value = await provider.getCurrentSchedule();
-        SubjectProvider.create(value);
-        await Navigator.of(context).push(
+        var userType = provider.userType;
+        var typeOfWeek = provider.typeOfWeek;
+        SubjectProvider.create(value, userType, typeOfWeek);
+        await Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => DayPage(),
             settings: RouteSettings(name: DayPage.routeName),
