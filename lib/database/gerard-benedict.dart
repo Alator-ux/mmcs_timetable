@@ -26,35 +26,6 @@ class DBProvider {
     String path = join(documentsDirectory.path, dbname);
     return await openDatabase(path, version: 1, onOpen: (db) {},
         onCreate: (Database db, int version) async {
-      await db.execute("CREATE TABLE Grade ("
-          "id INTEGER,"
-          "num INTEGER,"
-          "degree TEXT"
-          ")");
-      await db.execute("CREATE TABLE AllGroups ("
-          "id INTEGER,"
-          "name TEXT,"
-          "num INTEGER,"
-          "gradeid INTEGER"
-          ")");
-      await db.execute("CREATE TABLE Lesson ("
-          "id INTEGER,"
-          "groupid INTEGER,"
-          "time Text,"
-          "day Integer,"
-          "typeOfWeek Text"
-          ")");
-      await db.execute("CREATE TABLE Curricula ("
-          "id INTEGER,"
-          "lessonid INTEGER,"
-          "subject INTEGER,"
-          "subjectname Text,"
-          "subjectabbr Text,"
-          "teacherid INTEGER,"
-          "teachername Text,"
-          "roomid INTEGER,"
-          "roomname Text"
-          ")");
       await db.execute("CREATE TABLE Groups ("
           "updateable INTEGER,"
           "id INTEGER,"
@@ -186,11 +157,24 @@ class DBProvider {
       return [];
     }
 
+    List<Group> _deleteRepetitions(List<Group> groups) {
+      Set<String> groupsAsSet = Set<String>();
+      List<Group> res = [];
+      groups.forEach(
+        (group) {
+          if (!groupsAsSet.contains(group.asString())) {
+            groupsAsSet.add(group.asString());
+            res.add(group);
+          }
+        },
+      );
+      return res;
+    }
+
     for (int i = 0; i < lessons.length; i++) {
-      var gr = groups
-          .where((group) => group.uberid == lessons[i].uberid)
-          .toSet()
-          .toList();
+      var gr =
+          groups.where((group) => group.uberid == lessons[i].uberid).toList();
+      gr = _deleteRepetitions(gr);
       lessons[i].groups = gr;
     }
 
@@ -267,18 +251,10 @@ class DBProvider {
         );
       },
     );
-    // await Future.forEach(
-    //   groups,
-    //   (group) async {
-    //     await newGroup(group, 0);
-    //     await newGroup(group, 1);
-    //   },
-    // );
   }
 
   refreshWeeks(List<Week> weeks) async {
     final db = await database;
-    // db.update(table, values)
 
     db.rawDelete("DELETE FROM NormalLesson WHERE updateable = ${1}");
     db.rawDelete("DELETE FROM Groups WHERE updateable = ${1}");
