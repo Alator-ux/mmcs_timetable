@@ -11,11 +11,19 @@ class Day {
   }
   Day.fromSchedule(Schedule schedules, TypeOfWeek typeOfWeek) {
     normalLessons = [];
+    var groups = schedules.groups;
     schedules.lessons.forEach(
       (lesson) {
         var curricula =
             schedules.curricula.firstWhere((cur) => cur.lessonid == lesson.id);
-        var nLesson = NormalLesson.forDay(lesson, curricula, typeOfWeek);
+        groups = groups == null
+            ? null
+            : schedules.groups
+                .where((group) => group.uberid == lesson.uberid)
+                .toList();
+
+        var nLesson =
+            NormalLesson.forDay(lesson, curricula, groups, typeOfWeek);
         normalLessons.add(nLesson);
       },
     );

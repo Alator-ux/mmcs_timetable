@@ -46,7 +46,10 @@ class Week {
         days.add(d);
       } else {
         lessons.sort((l1, l2) => IntervalOfTime.compare(l1.time, l2.time));
-        var schdl = Schedule(lessons: lessons, curricula: schedule.curricula);
+        var schdl = Schedule(
+            lessons: lessons,
+            curricula: schedule.curricula,
+            groups: schedule.groups);
         Day d = Day.fromSchedule(schdl, typeOfWeek);
         days.add(d);
       }

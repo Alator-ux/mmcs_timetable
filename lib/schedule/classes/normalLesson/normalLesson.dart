@@ -33,20 +33,23 @@ class NormalLesson {
       this.groups,
       this.uberid});
 
-  NormalLesson.forDay(Lesson lesson, Curricula curricula, TypeOfWeek tweek) {
+  factory NormalLesson.forDay(Lesson lesson, Curricula curricula,
+      List<Group> groups, TypeOfWeek tweek) {
     // Т.к. normalesson может быть только upper или lower (но не full)
     // это сделано для индивидуальности id
-    lessonid = lesson.id * 10 + tweek.index;
-    dayid = lesson.day;
-    typeOfWeek = tweek;
-    groupid = lesson.groupid;
-    time = lesson.time;
-    subjectname = curricula.subjectname;
-    subjectabbr = curricula.subjectabbr;
-    teachername = curricula.teachername;
-    roomname = curricula.roomname;
-    groups = lesson.groups;
-    uberid = lesson.uberid;
+    return NormalLesson(
+      lessonid: lesson.id * 10 + tweek.index,
+      dayid: lesson.day,
+      typeOfWeek: tweek,
+      groupid: lesson.groupid,
+      time: lesson.time,
+      subjectname: curricula.subjectname,
+      subjectabbr: curricula.subjectabbr,
+      teachername: curricula.teachername,
+      roomname: curricula.roomname,
+      groups: groups,
+      uberid: lesson.uberid,
+    );
   }
   factory NormalLesson.fromJson(Map<String, dynamic> json) {
     String jsonTime = json['time'];
@@ -70,6 +73,21 @@ class NormalLesson {
       groups: null, //вручную задать значение в бд
     );
   }
+  factory NormalLesson.empty(int dayid) {
+    return NormalLesson(
+      lessonid: 0,
+      dayid: dayid,
+      subjectname: "",
+      subjectabbr: "",
+      teachername: "",
+      roomname: "",
+      time: IntervalOfTime.fromOneString("08:00-09:35"),
+      groupid: 0,
+      groups: [],
+      typeOfWeek: TypeOfWeek.lower,
+      uberid: 0,
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -84,5 +102,20 @@ class NormalLesson {
       'roomname': roomname,
       'uberid': uberid,
     };
+  }
+
+  ///Only for teachers
+  String groupsAsString() {
+    String res = "";
+    if (groups == null || groups.length == 0) {
+      return res;
+    }
+    for (var groupID = 0; groupID < groups.length - 1; groupID++) {
+      var groupAsString = groups[groupID].asString();
+      res += '$groupAsString, ';
+    }
+    var groupAsString = groups[groups.length - 1].asString();
+    res += '$groupAsString';
+    return res;
   }
 }
