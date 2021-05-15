@@ -28,6 +28,12 @@ class IntervalOfTime {
     return IntervalOfTime.fromString(beginAsString, endAsString);
   }
 
+  factory IntervalOfTime.copy(IntervalOfTime copyFrom) {
+    var begin = copyFrom.beginAsString();
+    var end = copyFrom.endAsString();
+    return IntervalOfTime.fromString(begin, end);
+  }
+
   String asString() {
     return beginAsString() + " - " + endAsString();
   }
@@ -98,19 +104,38 @@ class IntervalOfTime {
   }
 
   bool isCrossed(IntervalOfTime other) {
-    if (begin.hour == other.end.hour) if (begin.minute < other.begin.minute)
-      return true;
+    if ((this.begin.hour < other.begin.hour) &&
+        (this.end.hour < other.begin.hour)) {
+      return false;
+    }
+    if ((this.begin.hour > other.end.hour) &&
+        (this.end.hour > other.end.hour)) {
+      return false;
+    }
+    if (this.end.hour == other.begin.hour) {
+      if (this.end.minute > other.begin.minute) {
+        //?
+        return false;
+      }
+    }
+    if (this.begin.hour == other.end.hour) {
+      if (this.begin.minute > other.end.minute) {
+        return false;
+      }
+    }
 
-    if (begin.hour > other.begin.hour) return true;
-
-    return false;
+    return true;
   }
 }
 
 bool areTimesCorrect(TimeOfDay begin, TimeOfDay end) {
-  if (begin.hour > end.hour) return false;
+  if (begin.hour > end.hour) {
+    return false;
+  }
   if (begin.hour == end.hour) {
-    if (begin.minute > end.minute) return false;
+    if (begin.minute >= end.minute) {
+      return false;
+    }
   }
 
   return true;

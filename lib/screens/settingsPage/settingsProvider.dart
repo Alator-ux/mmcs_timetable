@@ -1,16 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:schedule/database/gerard-benedict.dart';
 import 'package:schedule/schedule/classes/enums.dart';
-import 'package:schedule/schedule/classes/week.dart';
 import 'package:schedule/screens/displayPages/subjectProvider.dart';
+import 'package:schedule/screens/entryPage/EntryPageProvider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io' as io;
+import 'package:path/path.dart';
 
 class SettingsProvider extends ChangeNotifier {
   final DBProvider _db = DBProvider.db;
   static SettingsProvider _instance;
   Future<SharedPreferences> _prefs;
   SubjectProvider _subjectProvider = SubjectProvider();
+  EntryPageProvider _entryPageProvider = EntryPageProvider();
   bool pushOn;
   TimeOfDay pushNotifTime;
   TypeOfWeek _startTypeOfWeek;
@@ -27,6 +31,7 @@ class SettingsProvider extends ChangeNotifier {
     return _instance;
   }
 
+  ///Initialize settings provider from shared preference
   Future<void> init() async {
     final SharedPreferences prefs = await _prefs;
 
@@ -59,12 +64,16 @@ class SettingsProvider extends ChangeNotifier {
 
     overWrite = false;
 
+    await initSubjectProvider();
+  }
+
+  Future<void> initSubjectProvider() async {
     if (isSaved) {
       await _subjectProvider.initFromDB(userType, calculateCurrentWeek());
     }
   }
 
-  ///Set UserType and TypeOfWeek
+  ///Set UserType, TypeOfWeek and id
   void setUTandToW({UserType userType, TypeOfWeek typeOfWeek, int newId}) {
     if (!isSaved) {
       userType = userType;
@@ -73,8 +82,8 @@ class SettingsProvider extends ChangeNotifier {
     }
   }
 
+  ///Calculate current type of the current week
   TypeOfWeek calculateCurrentWeek() {
-    // DateTime.fromMillisecondsSinceEpoch(now.millisecondsSinceEpoch);
     var beginOfCurWeek = _weekBegin();
     //Теперь dif имеет вид 7*k, где k может быть равно от 0 до очень больших чисел.
     var dif = _timeWhenSaved.difference(beginOfCurWeek).inDays;
@@ -87,12 +96,10 @@ class SettingsProvider extends ChangeNotifier {
     return TypeOfWeek.values[(parity + _startTypeOfWeek.index) % 2];
   }
 
+  ///Save settings in shared preference
   Future<void> save() async {
     if (overWrite) {
-      await _db.refreshDb();
-      await _db.fillWeeks(_subjectProvider.weeks);
-      pushOn = false;
-      pushNotifTime = TimeOfDay(hour: 0, minute: 0);
+      await _overWriteSavePart();
     }
     overWrite = false;
     isSaved = true;
@@ -110,6 +117,17 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> _overWriteSavePart() async {
+    await _db.refreshDb();
+    await _db.fillWeeks(_subjectProvider.weeks);
+    pushOn = false;
+    pushNotifTime = TimeOfDay(hour: 0, minute: 0);
+
+    await _db.refreshGrades(_entryPageProvider.grades);
+    await _db.refreshAllGroups(_entryPageProvider.allgroups);
+  }
+
+  ///Returns date of begin of the current week
   DateTime _weekBegin() {
     var now = DateTime.now();
     var year = now.year;
@@ -119,6 +137,7 @@ class SettingsProvider extends ChangeNotifier {
     return weekBegin;
   }
 
+  ///Set time before a lesson for trigger push-notification
   Future<void> changePushNotifTime(TimeOfDay newTime) async {
     pushNotifTime = newTime;
     _subjectProvider.scheduleAlarms();
@@ -134,16 +153,33 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> notificationsOff() async {
     _subjectProvider.cancelAlarms();
     pushOn = false;
+    pushNotifTime = _pushNotifTimes.first.value;
     await save();
   }
 
-  Future<void> _compareLessons(List<Week> weeks) async {
-    //TODO if issaved and overwrite
-    List<Week> weeksFromDb = [];
-    if (userType == UserType.student) {
-      weeksFromDb = await _db.getWeeksForStudent(1);
-    } else {
-      weeksFromDb = await _db.getWeeksForTeacher(1);
-    }
+  Future<void> refreshSchedule() async {
+    await _subjectProvider.refreshFromDB();
   }
+
+  ///Returns List of DropdownMenuItems for notificationTimeController
+  List<DropdownMenuItem> get pushNotifTimeDDMItems => _pushNotifTimes;
 }
+
+final List<DropdownMenuItem> _pushNotifTimes = [
+  DropdownMenuItem<TimeOfDay>(
+    value: TimeOfDay(hour: 0, minute: 0),
+    child: Text('0 мин'),
+  ),
+  DropdownMenuItem<TimeOfDay>(
+    value: TimeOfDay(hour: 0, minute: 5),
+    child: Text('5 мин'),
+  ),
+  DropdownMenuItem<TimeOfDay>(
+    value: TimeOfDay(hour: 0, minute: 10),
+    child: Text('10 мин'),
+  ),
+  DropdownMenuItem<TimeOfDay>(
+    value: TimeOfDay(hour: 0, minute: 15),
+    child: Text('15 мин'),
+  ),
+];

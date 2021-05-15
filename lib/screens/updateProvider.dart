@@ -3,6 +3,7 @@ import 'package:schedule/api/api_service.dart';
 import 'package:schedule/connectivity/connectivity_service.dart';
 import 'package:schedule/database/gerard-benedict.dart';
 import 'package:schedule/schedule/classes/enums.dart';
+import 'package:schedule/schedule/classes/group/group.dart';
 import 'package:schedule/schedule/classes/schedule/schedule.dart';
 import 'package:schedule/schedule/classes/week.dart';
 import 'package:schedule/screens/settingsPage/settingsProvider.dart';
@@ -56,7 +57,7 @@ class UpdateProvider with ChangeNotifier {
         apiGradeid.add(grade.id);
       },
     );
-    var apiAllGroups = [];
+    List<List<Group>> apiAllGroups = [];
     await Future.forEach(
       apiGrades,
       (grade) async {
@@ -76,21 +77,21 @@ class UpdateProvider with ChangeNotifier {
     var allGroups = await _db.getAllGroups(gradeid);
 
     if (apiGradeid.length != gradeid.length) {
-      // await _db.re //TODO refresh
+      await _db.refreshGrades(grades);
     } else {
       for (int i = 0; i < gradeid.length; i++) {
         if (apiGradeid[i] != gradeid[i]) {
-          // await _db //TODO refresh
+          await _db.refreshGrades(grades);
           break;
         }
       }
     }
     if (apiAllGroups.length != allGroups.length) {
-      // await _db.re //TODO refresh
+      await _db.refreshAllGroups(apiAllGroups);
     } else {
       for (int i = 0; i < allGroups.length; i++) {
         if (apiAllGroups[i] != allGroups[i]) {
-          // await _db //TODO refresh
+          await _db.refreshAllGroups(apiAllGroups);
           break;
         }
       }
