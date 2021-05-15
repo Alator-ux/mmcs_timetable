@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:schedule/schedule/classes/import_classes.dart';
 
 part 'group.g.dart';
 
@@ -45,6 +46,19 @@ class Group {
     res = res && gradenum == other.gradenum;
     res = res && groupnum == other.groupnum;
     return res;
+  }
+
+  factory Group.copy(Group copyFrom) {
+    return Group(
+      degree: copyFrom.degree,
+      id: copyFrom.id,
+      gradeid: copyFrom.gradeid,
+      n: copyFrom.n,
+      groupnum: copyFrom.groupnum,
+      gradenum: copyFrom.gradenum,
+      name: copyFrom.name,
+      uberid: copyFrom.uberid,
+    );
   }
 
   static List<Group> groupsFromString(String groupsAsString, int uberid) {

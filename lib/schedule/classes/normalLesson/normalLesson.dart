@@ -88,6 +88,27 @@ class NormalLesson {
       uberid: 0,
     );
   }
+  factory NormalLesson.copy(NormalLesson copyFrom) {
+    List<Group> groups = null;
+    if (copyFrom.groups != null) {
+      groups = List.generate(
+          copyFrom.groups.length, (ind) => Group.copy(copyFrom.groups[ind]));
+    }
+
+    return NormalLesson(
+      dayid: copyFrom.dayid,
+      groupid: copyFrom.groupid,
+      groups: groups,
+      lessonid: copyFrom.lessonid,
+      roomname: copyFrom.roomname,
+      subjectabbr: copyFrom.subjectabbr,
+      subjectname: copyFrom.subjectname,
+      teachername: copyFrom.teachername,
+      time: IntervalOfTime.copy(copyFrom.time),
+      typeOfWeek: copyFrom.typeOfWeek,
+      uberid: copyFrom.uberid,
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {
