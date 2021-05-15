@@ -2,12 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:schedule/main.dart';
-import 'package:schedule/notifications/notification_service.dart';
 import 'package:schedule/schedule/classes/enums.dart';
-import 'package:schedule/schedule/classes/import_classes.dart';
-import 'package:schedule/screens/displayPages/DayPage.dart';
 import 'package:schedule/screens/displayPages/subjectProvider.dart';
 import 'package:schedule/screens/entryPage/EntryPageProvider.dart';
+import 'package:schedule/screens/settingsPage/settingsProvider.dart';
+import 'package:schedule/screens/widgetsHelper/widgetsHelper.dart';
 import 'DDButton.dart';
 import 'package:provider/provider.dart';
 
@@ -28,8 +27,6 @@ class _EntryPageState extends State<EntryPage> {
 
   @override
   Widget build(BuildContext context) {
-    // double width = MediaQuery.of(context).size.width;
-    // TextStyle _textStyle = TextStyle(fontSize: width / 25);
     provider = Provider.of<EntryPageProvider>(context);
     return Column(
       children: [
@@ -41,6 +38,9 @@ class _EntryPageState extends State<EntryPage> {
               groupValue: provider.userType,
               onChanged: (value) {
                 provider.changeUserType(value);
+                if (provider.canShowGrades) {
+                  provider.changeGradeID(1);
+                }
               },
             ),
             Text(UserType.student.asString()),
@@ -49,6 +49,9 @@ class _EntryPageState extends State<EntryPage> {
               groupValue: provider.userType,
               onChanged: (value) {
                 provider.changeUserType(value);
+                if (provider.canShowTeachers) {
+                  provider.changeTeacher(provider.teachers.first);
+                }
               },
             ),
             Text(UserType.teacher.asString()),
@@ -57,17 +60,17 @@ class _EntryPageState extends State<EntryPage> {
         InformationCard(),
         SizedBox(height: 20),
         nextButton(context),
-        ElevatedButton(
+        CustomButton(
           // color: Colors.grey[200],
           child: Text(
             "Обновить",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
-          onPressed: provider.isOnline
+          onTap: provider.isOnline
               ? () {
                   if (provider.dbFilled) {
                     //TODO snackbar
-                    provider.refresh(context);
+                    // provider.refresh(context);
                   }
                   // var notification = NotificationService();
                   // notification.scheduleAlarm(DateTime.now().hashCode);
@@ -145,32 +148,62 @@ Widget teacherCard(TextStyle _textStyle) {
 
 Widget nextButton(BuildContext context) {
   var provider = Provider.of<EntryPageProvider>(context);
-  return ElevatedButton(
+  return CustomButton(
     // color: Colors.grey[200],
     child: Text(
       "Далее",
       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
     ),
-    onPressed: () async {
-      if (!provider.canShowGroups ||
-          !provider.dbFilled ||
-          !provider.scheduleFilled) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Пожалуйста, подождите пару секунд"),
-          ),
-        );
+    onTap: () async {
+      if (!provider.canShowGroups || !provider.isOnline) {
+        var settings = SettingsProvider();
+        if (!settings.isSaved) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Отсутствует подключение к интернету"),
+            ),
+          );
+        } else {
+          showDialog<void>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text("Отсутствует подключение к интернету"),
+              content: Text("Отсутствует подключение к интернету," +
+                  '\n' +
+                  " однако у вас есть сохраненное расписание." +
+                  '\n' +
+                  "Желаете ли вы его загрузить?"), //TODO test
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('Нет'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        var controller = NavigationController();
+                        controller.changeScreen(ScreenRoute.displayPage);
+                      },
+                      child: Text('Да'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }
       } else {
         var value = await provider.getCurrentSchedule();
         var userType = provider.userType;
         var typeOfWeek = provider.typeOfWeek;
         SubjectProvider.create(value, userType, typeOfWeek);
-        await Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => DayPage(),
-            settings: RouteSettings(name: DayPage.routeName),
-          ),
-        );
+        var controller = NavigationController();
+        controller.changeScreen(ScreenRoute.displayPage);
       }
     },
   );

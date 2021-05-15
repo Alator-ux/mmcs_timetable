@@ -27,6 +27,9 @@ class _FirstDropDownButtonState extends State<FirstDropDownButton> {
     if (!flag) {
       _grade = _gradeItems.first.value;
     }
+    // if (_grade.id != 0) {
+    //   provider.changeGradeID(_grade.id);
+    // }
   }
 
   @override
@@ -40,11 +43,13 @@ class _FirstDropDownButtonState extends State<FirstDropDownButton> {
   Widget build(BuildContext context) {
     return DropdownButton<Grade>(
       items: _gradeItems,
-      onChanged: (value) {
-        _grade = value;
-        flag = true;
-        provider.changeGradeID(value.id);
-      },
+      onChanged: _grade.id != 0
+          ? (value) {
+              _grade = value;
+              flag = true;
+              provider.changeGradeID(value.id);
+            }
+          : null,
       value: _grade,
       // style: _textStyle,
       isDense: true,
@@ -93,11 +98,13 @@ class _SecondDropDownButtonState extends State<SecondDropDownButton> {
   Widget build(BuildContext context) {
     return DropdownButton<String>(
       items: _progItems,
-      onChanged: (value) {
-        _prog = value;
-        flag = true;
-        provider.changeProgName(value);
-      },
+      onChanged: _prog != '0'
+          ? (value) {
+              _prog = value;
+              flag = true;
+              provider.changeProgName(value);
+            }
+          : null,
       value: _prog,
       // style: widget._textStyle,
       isDense: true,
@@ -150,11 +157,13 @@ class _ThirdDropDowButtonState extends State<ThirdDropDowButton> {
   Widget build(BuildContext context) {
     return DropdownButton<Group>(
       items: _groupItems,
-      onChanged: (value) {
-        _group = value;
-        flag = true;
-        provider.changeGroup(value);
-      },
+      onChanged: _group.id != 0
+          ? (value) {
+              _group = value;
+              flag = true;
+              provider.changeGroup(value);
+            }
+          : null,
       value: _group,
       // style: widget._textStyle,
       isDense: true,
@@ -205,10 +214,12 @@ class _TeacherDropDownButtonState extends State<TeacherDropDownButton> {
   Widget build(BuildContext context) {
     return DropdownButton<Teacher>(
       items: _teacherItems,
-      onChanged: (value) {
-        provider.changeTeacher(value);
-        flag = true;
-      },
+      onChanged: _teacher.id != 0
+          ? (value) {
+              provider.changeTeacher(value);
+              flag = true;
+            }
+          : null,
       value: _teacher,
       // style: widget._textStyle,
       isDense: true,

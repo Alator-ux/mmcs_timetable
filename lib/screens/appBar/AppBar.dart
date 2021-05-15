@@ -1,23 +1,28 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:schedule/main.dart';
+import 'package:schedule/schedule/classes/enums.dart';
 import 'package:schedule/screens/displayPages/subjectProvider.dart';
+import 'package:schedule/screens/settingsPage/SettingsPage.dart';
 
-//сам эппбар без секции с помощью
+//Апп бар для EntryPage
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final sizeCoef = SizeProvider().width;
   Size get preferredSize => const Size.fromHeight(50);
   @override
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.cyan[500],
       centerTitle: true,
-      title: Text('РАСПИСАНИЕ ИММиКН'),
+      title: Text(
+        'РАСПИСАНИЕ ИММиКН',
+        style: TextStyle(fontSize: sizeCoef * 0.042),
+      ),
       actions: [
-        FlatButton(
-          padding: EdgeInsets.symmetric(),
-          highlightColor: Colors.transparent,
+        TextButton(
+          // style: ButtonStyle(
+
+          //     ),
+          // highlightColor: Colors.transparent,
           onPressed: () {
             showDialog<void>(
                 context: context, builder: (context) => EntryPageHelpDialog());
@@ -32,38 +37,33 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-//сам эппбар c секцeй с помощью
+//Апп бар для дисплей страниц
 class MyAppBarHelp extends StatelessWidget implements PreferredSizeWidget {
+  final sizeCoef = SizeProvider().width;
   Size get preferredSize => const Size.fromHeight(50);
   @override
   Widget build(BuildContext context) {
-    SubjectProvider provider = Provider.of<SubjectProvider>(context);
     return AppBar(
       backgroundColor: Colors.cyan[500],
       centerTitle: true,
-      title: Text('РАСПИСАНИЕ ИММиКН'),
-      leading: FlatButton(
-        highlightColor: Colors.transparent,
-        onPressed: () => Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (BuildContext context) => MainPage())),
+      title: Text(
+        'РАСПИСАНИЕ ИММиКН',
+        style: TextStyle(fontSize: sizeCoef * 0.042),
+      ),
+      leading: MyButton(
+        onTap: () {
+          var controller = NavigationController();
+          controller.changeScreen(ScreenRoute.mainPage);
+        },
         child: Icon(
           Icons.arrow_back,
           color: Colors.white,
         ),
+        size: sizeCoef * 0.13,
       ),
       actions: [
         MyButton(
-          size: 40,
-          onTap: () {
-            provider.changeCurrentWeek();
-          },
-          child: Icon(
-            Icons.calendar_today,
-            color: Colors.white,
-          ),
-        ),
-        MyButton(
-          size: 40,
+          size: sizeCoef * 0.125,
           onTap: () {
             showDialog<void>(
                 context: context, builder: (context) => HelpDialog());
@@ -73,23 +73,64 @@ class MyAppBarHelp extends StatelessWidget implements PreferredSizeWidget {
             color: Colors.white,
           ),
         ),
+        MyButton(
+          size: sizeCoef * 0.125,
+          child: PopupMenuButton(
+            tooltip: 'Меню',
+            onSelected: (choice) =>
+                _handleClick(context: context, choice: choice),
+            itemBuilder: (BuildContext context) {
+              return {'Сменить неделю', 'Настройки'}.map(
+                (String choice) {
+                  return PopupMenuItem<String>(
+                    value: choice,
+                    child: Text(choice),
+                  );
+                },
+              ).toList();
+            },
+          ),
+        ),
       ],
     );
   }
 }
 
+void _handleClick({BuildContext context, String choice}) {
+  SubjectProvider provider = SubjectProvider();
+  switch (choice) {
+    case 'Сменить неделю':
+      provider.changeSelectedWeek();
+      break;
+    case 'Настройки':
+      Navigator.push(context,
+          MaterialPageRoute(builder: (BuildContext context) => SettingsPage()));
+      break;
+  }
+}
+
+//Апп бар для страницы редактирования
 class EditPageAppBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(50);
+  final sizeCoef = SizeProvider().width;
   @override
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.cyan[500],
       centerTitle: true,
-      title: Text('РАСПИСАНИЕ ИММиКН'),
+      title: Text(
+        'РАСПИСАНИЕ ИММиКН',
+        style: TextStyle(fontSize: sizeCoef * 0.042),
+      ),
+      leading: TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: Icon(
+          Icons.arrow_back,
+          color: Colors.white,
+        ),
+      ),
       actions: [
-        FlatButton(
-          padding: EdgeInsets.symmetric(),
-          highlightColor: Colors.transparent,
+        TextButton(
           onPressed: () {
             showDialog<void>(
                 context: context, builder: (context) => EntryPageHelpDialog());
@@ -104,7 +145,7 @@ class EditPageAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-//окно с информацией по навигации
+//окно с информацией по навигации для дисплей страниц
 class HelpDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -112,7 +153,7 @@ class HelpDialog extends StatelessWidget {
       title: Text('Помощь'),
       content: Text('Для навигации используйте свайп вправо и свайп влево'),
       actions: [
-        FlatButton(
+        TextButton(
           onPressed: () => Navigator.pop(context),
           child: Text('OK'),
         ),
@@ -121,6 +162,7 @@ class HelpDialog extends StatelessWidget {
   }
 }
 
+//окно с информацией по навигации для страницы входа
 class EntryPageHelpDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -130,7 +172,7 @@ class EntryPageHelpDialog extends StatelessWidget {
           'Данные буду вашем носителе, так что вы сможете посмотреть расписание даже без интернета.' +
               'Кнопка "Обновить" перезагрузит на носитель заново'),
       actions: [
-        FlatButton(
+        TextButton(
           onPressed: () => Navigator.pop(context),
           child: Text('OK'),
         ),
@@ -141,14 +183,17 @@ class EntryPageHelpDialog extends StatelessWidget {
 
 //боттом бар
 class MyBottomBar extends StatelessWidget {
-  String curWeek;
-  MyBottomBar(this.curWeek);
+  TypeOfWeek currentWeek;
+  TypeOfWeek selectedWeek;
+  MyBottomBar({this.selectedWeek, this.currentWeek});
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
       color: Colors.cyan[500],
       child: Text(
-        curWeek,
+        selectedWeek.asString() +
+            (currentWeek == selectedWeek ? " (текущая)" : "") +
+            " неделя",
         textAlign: TextAlign.center,
       ),
     );
@@ -164,13 +209,14 @@ class MyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      //TODO попробовать заменить на InkWell
+    return InkWell(
       onTap: onTap,
-      child: Container(
-        width: size,
-        height: size,
-        child: child,
+      child: Ink(
+        child: Container(
+          width: size,
+          height: size,
+          child: child,
+        ),
       ),
     );
   }

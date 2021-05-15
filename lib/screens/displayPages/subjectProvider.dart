@@ -1,4 +1,3 @@
-import 'dart:math' show Random;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:schedule/database/gerard-benedict.dart';
@@ -6,7 +5,6 @@ import 'package:schedule/notifications/notification_service.dart';
 import 'package:schedule/schedule/classes/day.dart';
 import 'package:schedule/schedule/classes/enums.dart';
 import 'package:schedule/schedule/classes/normalLesson/normalLesson.dart';
-import 'package:schedule/schedule/classes/time.dart';
 import 'package:schedule/schedule/classes/week.dart';
 
 class SubjectProvider with ChangeNotifier {
@@ -18,7 +16,6 @@ class SubjectProvider with ChangeNotifier {
   TypeOfWeek _currentWeek;
   UserType _userType;
   List<AlarmInfo> alarms;
-  List<NormalLesson> _tempLessons;
 
   SubjectProvider._();
   factory SubjectProvider() {
@@ -33,6 +30,7 @@ class SubjectProvider with ChangeNotifier {
     return res;
   }
 
+  ///Refresh fields from data
   void refresh(List<Week> weeks, UserType userType, TypeOfWeek typeOfWeek) {
     _weeks = weeks;
     _userType = userType;
@@ -41,6 +39,7 @@ class SubjectProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  ///Init subject provider from db if schedule was saved
   Future<void> initFromDB(UserType userType, TypeOfWeek typeOfWeek) async {
     List<Week> weeks = [];
     if (userType == UserType.student) {
@@ -49,6 +48,19 @@ class SubjectProvider with ChangeNotifier {
       weeks = await db.getWeeksForTeacher(1);
     }
     return SubjectProvider.create(weeks, userType, typeOfWeek);
+  }
+
+  ///Fill updateable rows in db from unupdateable
+  ///Also fill these weeks
+  Future<void> refreshFromDB() async {
+    List<Week> weeks = [];
+    if (userType == UserType.student) {
+      weeks = await db.getWeeksForStudent(0);
+    } else {
+      weeks = await db.getWeeksForTeacher(0);
+    }
+    await db.refreshWeeks(weeks);
+    return SubjectProvider.create(weeks, userType, _currentWeek);
   }
 
   Day get currentDay {
@@ -75,50 +87,40 @@ class SubjectProvider with ChangeNotifier {
     return _weeks;
   }
 
-  void changeCurrentWeek() {
+  void changeSelectedWeek() {
     _selectedWeek =
         _selectedWeek == TypeOfWeek.lower ? TypeOfWeek.upper : TypeOfWeek.lower;
     notifyListeners();
   }
 
-  void replaceLesson(NormalLesson oldLesson, NormalLesson newLesson) {
-    var dayID = oldLesson.dayid;
-    var ind = _weeks[_selectedWeek.index]
-        .days[dayID]
-        .normalLessons
-        .indexOf(oldLesson);
-    if (ind == -1) {
-      addNewLesson(newLesson);
-    } else {
-      _weeks[_selectedWeek.index].days[dayID].normalLessons[ind] = newLesson;
-      scheduleAlarms();
-      notifyListeners();
-    }
-  }
+  // void replaceLesson(NormalLesson oldLesson, NormalLesson newLesson) { //TODO удалить
+  //   var dayID = oldLesson.dayid;
+  //   var ind = _weeks[_selectedWeek.index]
+  //       .days[dayID]
+  //       .normalLessons
+  //       .indexOf(oldLesson);
+  //   if (ind == -1) {
+  //     addNewLesson(newLesson);
+  //   } else {
+  //     _weeks[_selectedWeek.index].days[dayID].normalLessons[ind] = newLesson;
+  //     scheduleAlarms();
+  //     notifyListeners();
+  //   }
+  // }
 
-  void addNewLesson(NormalLesson newLesson) {
-    var dayID = newLesson.dayid;
-    newLesson.lessonid = _generateID();
-    _weeks[_selectedWeek.index].days[dayID].normalLessons.add(newLesson);
-    _weeks[_selectedWeek.index]
-        .days[dayID]
-        .normalLessons
-        .sort((l1, l2) => IntervalOfTime.compare(l1.time, l2.time));
-    scheduleAlarms();
-    notifyListeners();
-  }
+  // void addNewLesson(NormalLesson newLesson) { //TODO удалить
+  //   var dayID = newLesson.dayid;
+  //   // newLesson.lessonid = _generateID();
+  //   _weeks[_selectedWeek.index].days[dayID].normalLessons.add(newLesson);
+  //   _weeks[_selectedWeek.index]
+  //       .days[dayID]
+  //       .normalLessons
+  //       .sort((l1, l2) => IntervalOfTime.compare(l1.time, l2.time));
+  //   scheduleAlarms();
+  //   notifyListeners();
+  // }
 
-  int _generateID() {
-    Random random = new Random();
-    int generatedID;
-    do {
-      generatedID = random.nextInt(1000) + 1000;
-      //до тех пор пока в каждой недели нет хотя бы одного урока такого айди
-    } while (_weeks.any((week) => week.days.any((day) => day.normalLessons
-        .any((lesson) => (lesson.lessonid / 10) == generatedID))));
-    return generatedID;
-  }
-
+  ///Schedule notifications for ~ a month
   void scheduleAlarms() async {
     alarms = AlarmInfo.alarmsFromList(_weeks, _currentWeek.index);
     var notification = NotificationService();
@@ -127,6 +129,7 @@ class SubjectProvider with ChangeNotifier {
     print('');
   }
 
+  ///Schedule cancel all scheduled alarms
   void cancelAlarms() async {
     var notification = NotificationService();
     await notification.cancelAll();
@@ -148,24 +151,18 @@ class SubjectProvider with ChangeNotifier {
 
   /// Set temp lessons. On call function "save" this lessons
   /// will be saved as main lessons in selected day and week
-  void temp(List<NormalLesson> lessons) {
-    _tempLessons = lessons;
-  }
-
-  void deleteFromTemp(NormalLesson lesson) {
-    if (_tempLessons != null) {
-      var isrem = _tempLessons.remove(lesson);
-      print(isrem);
-    }
-  }
+  // void temp(List<NormalLesson> lessons) {
+  //   _tempLessons = lessons;
+  // }
 
   /// Save temp lessons as main lessons in selected day and week
-  void save(int dayID) async {
-    if (_tempLessons != null) {
-      _weeks[_selectedWeek.index].days[dayID].normalLessons = _tempLessons;
+  Future<void> save({int dayId, List<NormalLesson> lessons}) async {
+    if (lessons != null) {
+      _weeks[_selectedWeek.index].days[dayId].normalLessons = lessons;
+
+      await db.refreshWeeks(_weeks);
+      scheduleAlarms();
+      notifyListeners();
     }
-    await db.refreshWeeks(_weeks);
-    scheduleAlarms();
-    notifyListeners();
   }
 }

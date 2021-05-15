@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:schedule/schedule/classes/enums.dart';
 import 'package:schedule/screens/appBar/AppBar.dart';
 import 'package:schedule/screens/displayPages/DayPage.dart';
 import 'package:schedule/screens/entryPage/EntryPageProvider.dart';
@@ -18,8 +19,8 @@ Future<void> main() async {
   SettingsProvider settings = SettingsProvider();
   await settings.init();
   initialRoute = settings.isSaved ? DayPage.routeName : MainPage.routeName;
-  var ind = settings.isSaved ? 1 : 0;
-  NavigationController.create(ind);
+  var route = settings.isSaved ? ScreenRoute.displayPage : ScreenRoute.mainPage;
+  NavigationController.create(route);
 
   runApp(MyApp());
 }
@@ -60,16 +61,23 @@ class MainPage extends StatelessWidget {
 
 class SizeProvider {
   static SizeProvider _instance;
-  double width;
-  double height;
+  double _width;
+  double _height;
   SizeProvider._();
   factory SizeProvider() {
     _instance ??= SizeProvider._();
     return _instance;
   }
+  double get width => _width;
+  double get height => _height;
   void setSize(double width, double height) {
-    this.width = width;
-    this.height = height;
+    this._width = width;
+    this._height = height;
+  }
+
+  double getSize(double coef, {SizeFrom from = SizeFrom.width}) {
+    var _from = from == SizeFrom.width ? width : height;
+    return coef * _from;
   }
 }
 
@@ -85,7 +93,7 @@ class _MyNavigatorState extends State<MyNavigator> {
       create: (context) => NavigationController(),
       child: Consumer<NavigationController>(builder: (context, controller, _) {
         return IndexedStack(
-          index: controller.index,
+          index: controller.route.index,
           children: [
             MainPage(),
             DayPage(),
@@ -99,24 +107,23 @@ class _MyNavigatorState extends State<MyNavigator> {
 class NavigationController with ChangeNotifier {
   static NavigationController _instance;
   NavigationController._();
-  int _index = 0;
+  ScreenRoute _route = ScreenRoute.mainPage;
   factory NavigationController() {
     _instance ??= NavigationController._();
     return _instance;
   }
-  factory NavigationController.create(int ind) {
+  factory NavigationController.create(ScreenRoute route) {
     _instance ??= NavigationController._();
-    _instance._index = ind;
+    _instance._route = route;
     return _instance;
   }
 
-  int get index {
-    return _index;
+  ScreenRoute get route {
+    return _route;
   }
 
-  void changeScreen(int ind) {
-    //TODO enum screen
-    _index = ind;
+  void changeScreen(ScreenRoute route) {
+    _route = route;
     notifyListeners();
   }
 }

@@ -4,7 +4,6 @@ import 'package:schedule/main.dart';
 import 'package:schedule/schedule/classes/day.dart';
 import 'package:schedule/schedule/classes/enums.dart';
 import 'package:schedule/screens/displayPages/subjectProvider.dart';
-import 'package:schedule/screens/settingsPage/settingsProvider.dart';
 import 'package:schedule/screens/updateProvider.dart';
 import 'WeekPage.dart';
 import '../appBar/AppBar.dart';
@@ -55,38 +54,8 @@ class _DayPageHelperState extends State<DayPageHelper> {
     return Scaffold(
       appBar: MyAppBarHelp(),
       body: Builder(builder: (context) {
-        // if (updProvider.needToUpdate) {
-        //   showDialog<void>(
-        //     context: context,
-        //     builder: (context) => AlertDialog(
-        //       title: Text('Доступно обновленное расписание'),
-        //       content: Text(
-        //           'Появилась новая версия выбранного расписания. Хотите ли вы его обновить? При обновлении текущее будет стерто.'),
-        //       actions: [
-        //         Row(
-        //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //           children: [
-        //             TextButton(
-        //               onPressed: () {
-        //                 Navigator.pop(context);
-        //               },
-        //               child: Text('Нет'),
-        //             ),
-        //             TextButton(
-        //               onPressed: () {
-        //                 provider.refresh(updProvider.apiWeeks,
-        //                     provider.userType, provider.currentWeek);
-        //               },
-        //               child: Text('Да'),
-        //             ),
-        //           ],
-        //         ),
-        //       ],
-        //     ),
-        //   );
-        // }
         return PageView(
-          children: [Subjects(), WeekPage()],
+          children: [Subjects(), WeekPage()], //TODO builder
         );
       }),
       bottomNavigationBar: MyBottomBar(
@@ -101,6 +70,36 @@ class Subjects extends StatelessWidget {
   static const String routeName = '/EntryPage/DayPage/Subjects';
   @override
   Widget build(BuildContext context) {
+    // if (updProvider.needToUpdate) {
+    //   showDialog<void>(
+    //     context: context,
+    //     builder: (context) => AlertDialog(
+    //       title: Text('Доступно обновленное расписание'),
+    //       content: Text(
+    //           'Появилась новая версия выбранного расписания. Хотите ли вы его обновить? При обновлении текущее будет стерто.'),
+    //       actions: [
+    //         Row(
+    //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //           children: [
+    //             TextButton(
+    //               onPressed: () {
+    //                 Navigator.pop(context);
+    //               },
+    //               child: Text('Нет'),
+    //             ),
+    //             TextButton(
+    //               onPressed: () {
+    //                 provider.refresh(updProvider.apiWeeks,
+    //                     provider.userType, provider.currentWeek);
+    //               },
+    //               child: Text('Да'),
+    //             ),
+    //           ],
+    //         ),
+    //       ],
+    //     ),
+    //   );
+    // }
     return ListView(
       key: PageStorageKey<String>('DayPageScrollingPosition'),
       children: subjectsInf(context),

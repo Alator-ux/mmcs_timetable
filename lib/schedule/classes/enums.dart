@@ -1,3 +1,6 @@
+import 'package:schedule/main.dart' show MainPage;
+import 'package:schedule/screens/displayPages/DayPage.dart' show DayPage;
+
 enum TypeOfWeek { lower, upper }
 
 extension ToWConverter on TypeOfWeek {
@@ -69,3 +72,19 @@ extension UTConverter on UserType {
     return "";
   }
 }
+
+enum SizeFrom { width, height }
+
+enum ScreenRoute { mainPage, displayPage }
+
+ScreenRoute screenRouteFromString(String route) {
+  switch (route) {
+    case MainPage.routeName:
+      return ScreenRoute.mainPage;
+    case DayPage.routeName:
+      return ScreenRoute.displayPage;
+  }
+  return ScreenRoute.mainPage;
+}
+
+enum TimeType { beginHour, beginMinute, endHour, endMinute }

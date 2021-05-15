@@ -14,17 +14,16 @@ class WeekPage extends StatelessWidget {
   static const String routeName = '/EntryPage/DayPage/WeekPage';
   @override
   Widget build(BuildContext context) {
+    double width = SizeProvider().width;
+    TextStyle _textStyle = TextStyle(
+        color: Colors.black, fontWeight: FontWeight.bold, fontSize: width / 20);
+    var settings = SettingsProvider();
     return Scaffold(
       body: ListView.separated(
         key: PageStorageKey<String>('WeekPageScrollingPosition'),
         itemCount: 7,
         separatorBuilder: (context, index) => SizedBox(height: 10),
         itemBuilder: (BuildContext context, int index) {
-          double width = SizeProvider().width;
-          TextStyle _textStyle = TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: width / 20);
           return Card(
             margin: EdgeInsets.all(10),
             child: ListTileTheme(
@@ -32,13 +31,19 @@ class WeekPage extends StatelessWidget {
               selectedColor: Colors.black,
               child: GestureDetector(
                 onLongPress: () {
-                  var settings = SettingsProvider();
                   if (settings.isSaved && !settings.overWrite) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (BuildContext context) =>
                               EditModePage(index)),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                            'Для редактирования вы должны сохранить это расписание в настройках'),
+                      ),
                     );
                   }
                 },

@@ -1,9 +1,5 @@
 import 'dart:async';
-import 'dart:io' as io;
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:schedule/api/api_service.dart';
 import 'package:schedule/connectivity/connectivity_service.dart';
 import 'package:schedule/database/gerard-benedict.dart';
@@ -11,7 +7,6 @@ import 'package:schedule/schedule/classes/enums.dart';
 import 'package:schedule/schedule/classes/import_classes.dart';
 import 'package:schedule/schedule/classes/teacher/teacher.dart';
 import 'package:schedule/schedule/classes/week.dart';
-import 'package:path/path.dart';
 import 'package:schedule/screens/settingsPage/settingsProvider.dart';
 
 class EntryPageProvider with ChangeNotifier {
@@ -39,10 +34,13 @@ class EntryPageProvider with ChangeNotifier {
     _streamSubscription = connectivity.listen(
       (event) {
         isOnline = event == ConnectionStatus.Online;
+        if (isOnline) {
+          _fillGrades();
+        }
         notifyListeners();
       },
     );
-    _fillGrades();
+    // _fillGrades();
   }
 
   @override
@@ -53,21 +51,6 @@ class EntryPageProvider with ChangeNotifier {
 
   Future<void> _fillGrades() async {
     await _fillGradesFromApi();
-    // if (await io.File(path).exists()) {
-    //   await _fillGradesFromDB();
-    // } else {
-    //   if (isOnline) {
-    //     await _fillGradesFromApi();
-    //   }
-    // }
-  }
-
-  void refresh(BuildContext context) async {
-    if (isOnline) {
-      await _fillGradesFromApi();
-    } else {
-      // noConnectionSnackBar(context);
-    }
   }
 
   // Future<void> _fillGradesFromDB() async {
@@ -89,16 +72,29 @@ class EntryPageProvider with ChangeNotifier {
   // }
 
   Future<void> _fillGradesFromApi() async {
+    if (!isOnline) {
+      return;
+    }
+
     scheduleFilled = false;
     grades = [];
     allgroups = [];
     teachers = [];
-    // dbFilled = false;
     grades = await api.getGrades();
     teachers = await api.getTeachers();
-    if (teachers.first.name == "") {
-      teachers.removeAt(0);
+
+    var invalidTeachers =
+        teachers.where((teacher) => teacher.name == "").toList();
+    if (invalidTeachers.length != 0) {
+      invalidTeachers.forEach(
+        (invalidTeacher) {
+          //Как-то раз обычный ремув по экземпляру класса не работал. По этой причине не рискую *орех справедливости*
+          var ind = teachers.indexOf(invalidTeacher);
+          teachers.removeAt(ind);
+        },
+      );
     }
+
     currentTeacher = teachers.first;
     await Future.forEach(
       grades,
@@ -111,19 +107,12 @@ class EntryPageProvider with ChangeNotifier {
     typeOfWeek = TypeOfWeek.values[typeOfWeekInd];
     scheduleFilled = true;
     changeGradeID(grades.first.id);
-    // await _fillDB(); //TODO сделать заполнение в другом месте
-  }
-
-  Future<void> _fillDB() async {
-    await db.refreshDb();
-    // await db.fillGradeTable(grades);
-    // await db.fillAllGroupTable(allgroups);
-    dbFilled = true;
-    print('vse');
-    notifyListeners();
   }
 
   Future<void> _generateWeeks() async {
+    if (!isOnline) {
+      return;
+    }
     weeks = [];
     bool areWeeksOld = false;
     int id = 0;
@@ -209,17 +198,20 @@ class EntryPageProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  ///Return all groups of the current grade
   List<Group> _groupsOfCurGrade() {
     return allgroups.firstWhere(
         (listOfGroup) => listOfGroup.first.gradeid == currentGradeID);
   }
 
+  ///Returns all group names of the current grade
   Set<String> get currentGroupNames {
     var groups = _groupsOfCurGrade();
     var progs = groups.map((group) => group.name.toString()).toSet();
     return progs;
   }
 
+  ///Returns all groups of the current grade
   List<Group> get currentGroups {
     var groups = _groupsOfCurGrade();
     var res = groups.where((group) => group.name == currentProgName);
