@@ -89,7 +89,13 @@ class DBProvider {
 
   newAllGroups(Group group) async {
     final db = await database;
-    var res = await db.insert("AllGroups", group.toJson());
+    var tempRes = Map<String, dynamic>();
+    var groupJson = group.toJson();
+    tempRes['id'] = groupJson['id'];
+    tempRes['name'] = groupJson['name'];
+    tempRes['num'] = groupJson['num'];
+    tempRes['gradeid'] = groupJson['gradeid'];
+    var res = await db.insert("AllGroups", tempRes);
     return res;
   }
 
@@ -217,6 +223,18 @@ class DBProvider {
         );
       },
     );
+  }
+
+  refreshGrades(List<Grade> grades) async {
+    final db = await database;
+    db.delete('Grade');
+    fillGradeTable(grades);
+  }
+
+  refreshAllGroups(List<List<Group>> groups) async {
+    final db = await database;
+    db.delete('AllGroups');
+    fillAllGroupTable(groups);
   }
 
   //** "Refresh" section's end **/
