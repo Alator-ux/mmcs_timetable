@@ -1,13 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:schedule/database/gerard-benedict.dart';
 import 'package:schedule/schedule/classes/enums.dart';
 import 'package:schedule/screens/displayPages/subjectProvider.dart';
 import 'package:schedule/screens/entryPage/EntryPageProvider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:io' as io;
-import 'package:path/path.dart';
 
 class SettingsProvider extends ChangeNotifier {
   final DBProvider _db = DBProvider.db;
@@ -68,6 +65,7 @@ class SettingsProvider extends ChangeNotifier {
 
   Future<void> initSubjectProvider() async {
     if (isSaved) {
+      overWrite = false;
       await _subjectProvider.initFromDB(userType, calculateCurrentWeek());
     }
   }
@@ -100,7 +98,7 @@ class SettingsProvider extends ChangeNotifier {
     if (overWrite) {
       await _overWriteSavePart();
     }
-    // overWrite = false;
+    overWrite = false;
     isSaved = true;
     userType = _subjectProvider.userType;
     _startTypeOfWeek = _subjectProvider.currentWeek;

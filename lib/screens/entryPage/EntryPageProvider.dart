@@ -10,6 +10,7 @@ import 'package:schedule/schedule/classes/week.dart';
 import 'package:schedule/screens/settingsPage/settingsProvider.dart';
 
 class EntryPageProvider with ChangeNotifier {
+  static EntryPageProvider _instance;
   final api = RestClient.create();
   final connectivity = ConnectivityService();
   DBProvider db = DBProvider.db;
@@ -28,7 +29,7 @@ class EntryPageProvider with ChangeNotifier {
   bool isOnline = false;
   UserType userType = UserType.student;
   TypeOfWeek typeOfWeek;
-  EntryPageProvider() {
+  EntryPageProvider._() {
     connectivity.currentStatus
         .then((value) => isOnline = value == ConnectionStatus.Online);
     _streamSubscription = connectivity.listen(
@@ -40,7 +41,11 @@ class EntryPageProvider with ChangeNotifier {
         notifyListeners();
       },
     );
-    // _fillGrades();
+  }
+
+  factory EntryPageProvider() {
+    _instance ??= EntryPageProvider._();
+    return _instance;
   }
 
   @override
@@ -52,24 +57,6 @@ class EntryPageProvider with ChangeNotifier {
   Future<void> _fillGrades() async {
     await _fillGradesFromApi();
   }
-
-  // Future<void> _fillGradesFromDB() async {
-  //   grades = [];
-  //   allgroups = [];
-  //   teachers = [];
-
-  //   grades = await db.getAllGrades();
-  //   List<int> gradeid = [];
-  //   await Future.forEach(
-  //     grades,
-  //     (grade) {
-  //       gradeid.add(grade.id);
-  //     },
-  //   );
-  //   allgroups = await db.getAllGroups(gradeid);
-  //   teachers = await api.getTeachers(); //TODO delete
-  //   changeGradeID(grades.first.id);
-  // }
 
   Future<void> _fillGradesFromApi() async {
     if (!isOnline) {
@@ -98,8 +85,15 @@ class EntryPageProvider with ChangeNotifier {
     currentTeacher = teachers.first;
     await Future.forEach(
       grades,
-      (grade) async {
+      (Grade grade) async {
         var groups = await api.getGroups(grade.id);
+        groups.forEach(
+          (group) {
+            group.degree = grade.degree;
+            group.gradenum = grade.n;
+            group.groupnum = group.n;
+          },
+        );
         allgroups.add(groups);
       },
     );
@@ -160,8 +154,6 @@ class EntryPageProvider with ChangeNotifier {
     weeks.add(week);
     week = Week(schedule, TypeOfWeek.upper);
     weeks.add(week);
-    print('');
-    // await db.fillWeeks(weeks);
   }
 
   Future<List<Week>> getCurrentSchedule() async {

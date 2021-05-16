@@ -151,18 +151,18 @@ class AlarmInfo {
   String body;
   tz.TZDateTime time;
 
-  AlarmInfo(NormalLesson lesson) {
-    // var time = Time(18,0,0);
-    var dateTime = DateTime.now().add(Duration(seconds: 10));
-    print(dateTime);
-    time = tz.TZDateTime.from(
-      dateTime,
-      tz.local,
-    );
-    id = lesson.lessonid;
-    title = 'Скоро пара! В ${lesson.time.beginAsString()}';
-    body = lesson.subjectname.isEmpty ? lesson.subjectabbr : lesson.subjectname;
-  }
+  // AlarmInfo(NormalLesson lesson) {
+  //   // var time = Time(18,0,0);
+  //   var dateTime = DateTime.now().add(Duration(seconds: 10));
+  //   print(dateTime);
+  //   time = tz.TZDateTime.from(
+  //     dateTime,
+  //     tz.local,
+  //   );
+  //   id = lesson.lessonid;
+  //   title = 'Скоро пара! В ${lesson.time.beginAsString()}';
+  //   body = lesson.subjectname.isEmpty ? lesson.subjectabbr : lesson.subjectname;
+  // }
 
   AlarmInfo.withDateTime(NormalLesson lesson, DateTime dateTime) {
     time = tz.TZDateTime.from(
@@ -170,7 +170,7 @@ class AlarmInfo {
       tz.local,
     );
     id = lesson.lessonid + dateTime.day;
-    title = 'Скоро пара! В ${lesson.time.beginAsString()}';
+    title = 'В ${lesson.time.beginAsString()} у вас пара';
     body = lesson.subjectname.isEmpty ? lesson.subjectabbr : lesson.subjectname;
   }
 
@@ -184,7 +184,6 @@ class AlarmInfo {
     var day = dateTime.day;
     var weekDay = dateTime.weekday - 1;
     for (var lesson in lessons) {
-      //TODO вынести из цикла
       var dif = lesson.dayid - weekDay;
 
       var dayTime = lesson.time.begin;
@@ -216,10 +215,6 @@ class AlarmInfo {
         DateTime.now().add(Duration(minutes: -1 * pushNotifTime.minute));
     var curWeekDay = dateTime.weekday - 1;
 
-    // var test = weeks[startWeekInd].days[curWeekDay].normalLessons.first;
-    // var now = DateTime.now();
-    // var atest = AlarmInfo.withDateTime(test, now.add(Duration(seconds: 2)));
-    // res.add(atest);
     var lessons = weeks[startWeekInd]
         .days[curWeekDay]
         .normalLessons
