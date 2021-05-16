@@ -35,7 +35,10 @@ class DBProvider {
           "id INTEGER,"
           "name TEXT,"
           "num INTEGER,"
-          "gradeid INTEGER"
+          "gradeid INTEGER,"
+          "gradenum INTEGER,"
+          "degree TEXT,"
+          "groupnum INTEGER"
           ")");
       await db.execute("CREATE TABLE Groups ("
           "updateable INTEGER,"
@@ -95,6 +98,9 @@ class DBProvider {
     tempRes['name'] = groupJson['name'];
     tempRes['num'] = groupJson['num'];
     tempRes['gradeid'] = groupJson['gradeid'];
+    tempRes['gradenum'] = groupJson['gradenum'];
+    tempRes['groupnum'] = groupJson['groupnum'];
+    tempRes['degree'] = groupJson['degree'];
     var res = await db.insert("AllGroups", tempRes);
     return res;
   }
@@ -227,14 +233,14 @@ class DBProvider {
 
   refreshGrades(List<Grade> grades) async {
     final db = await database;
-    db.delete('Grade');
-    fillGradeTable(grades);
+    await db.delete('Grade');
+    await fillGradeTable(grades);
   }
 
   refreshAllGroups(List<List<Group>> groups) async {
     final db = await database;
-    db.delete('AllGroups');
-    fillAllGroupTable(groups);
+    await db.delete('AllGroups');
+    await fillAllGroupTable(groups);
   }
 
   //** "Refresh" section's end **/
@@ -255,6 +261,9 @@ class DBProvider {
     gradeid.forEach(
       (id) {
         var groups = allgroups.where((group) => group.gradeid == id).toList();
+        groups.forEach(
+          (group) {},
+        );
         res.add(groups);
       },
     );
@@ -355,7 +364,7 @@ class DBProvider {
     );
   }
 
-  fillAllGroupTable(List<List<Group>> allgroups) async {
+  Future<void> fillAllGroupTable(List<List<Group>> allgroups) async {
     await Future.forEach(
       allgroups,
       (groups) async {
@@ -369,7 +378,7 @@ class DBProvider {
     );
   }
 
-  fillGradeTable(List<Grade> grades) async {
+  Future<void> fillGradeTable(List<Grade> grades) async {
     await Future.forEach(
       grades,
       (grade) async {
