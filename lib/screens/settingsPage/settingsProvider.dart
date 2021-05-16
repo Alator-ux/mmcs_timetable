@@ -63,7 +63,6 @@ class SettingsProvider extends ChangeNotifier {
     id = tempid == null ? 0 : tempid;
 
     overWrite = false;
-
     await initSubjectProvider();
   }
 
@@ -101,7 +100,7 @@ class SettingsProvider extends ChangeNotifier {
     if (overWrite) {
       await _overWriteSavePart();
     }
-    overWrite = false;
+    // overWrite = false;
     isSaved = true;
     userType = _subjectProvider.userType;
     _startTypeOfWeek = _subjectProvider.currentWeek;
@@ -111,7 +110,7 @@ class SettingsProvider extends ChangeNotifier {
     prefs.setBool('isSaved', isSaved);
     var timeWhenSaved = _weekBegin().millisecondsSinceEpoch;
     prefs.setInt('timeWhenSaved', timeWhenSaved);
-    prefs.setInt('weekInd', _subjectProvider.currentWeek.index); //TODO
+    prefs.setInt('weekInd', _subjectProvider.currentWeek.index);
     prefs.setInt('userTypeInd', userType.index);
     prefs.setInt('id', id);
     notifyListeners();
@@ -125,6 +124,13 @@ class SettingsProvider extends ChangeNotifier {
 
     await _db.refreshGrades(_entryPageProvider.grades);
     await _db.refreshAllGroups(_entryPageProvider.allgroups);
+    userType = _entryPageProvider.userType;
+    _startTypeOfWeek = _entryPageProvider.typeOfWeek;
+    if (userType == UserType.student) {
+      id = _entryPageProvider.currentGroup.id;
+    } else {
+      id = _entryPageProvider.currentTeacher.id;
+    }
   }
 
   ///Returns date of begin of the current week
