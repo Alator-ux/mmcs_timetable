@@ -70,36 +70,43 @@ class Subjects extends StatelessWidget {
   static const String routeName = '/EntryPage/DayPage/Subjects';
   @override
   Widget build(BuildContext context) {
-    // if (updProvider.needToUpdate) {
-    //   showDialog<void>(
-    //     context: context,
-    //     builder: (context) => AlertDialog(
-    //       title: Text('Доступно обновленное расписание'),
-    //       content: Text(
-    //           'Появилась новая версия выбранного расписания. Хотите ли вы его обновить? При обновлении текущее будет стерто.'),
-    //       actions: [
-    //         Row(
-    //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //           children: [
-    //             TextButton(
-    //               onPressed: () {
-    //                 Navigator.pop(context);
-    //               },
-    //               child: Text('Нет'),
-    //             ),
-    //             TextButton(
-    //               onPressed: () {
-    //                 provider.refresh(updProvider.apiWeeks,
-    //                     provider.userType, provider.currentWeek);
-    //               },
-    //               child: Text('Да'),
-    //             ),
-    //           ],
-    //         ),
-    //       ],
-    //     ),
-    //   );
-    // }
+    Future.delayed(
+      Duration.zero,
+      () {
+        var updProvider = UpdateProvider();
+        var provider = SubjectProvider();
+        if (updProvider.needToUpdate) {
+          showDialog<void>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Доступно обновленное расписание'),
+              content: Text(
+                  'Появилась новая версия выбранного расписания. Хотите ли вы его обновить? При обновлении текущее будет стерто.'),
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('Нет'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        provider.refresh(updProvider.apiWeeks,
+                            provider.userType, provider.currentWeek);
+                      },
+                      child: Text('Да'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }
+      },
+    );
     return ListView(
       key: PageStorageKey<String>('DayPageScrollingPosition'),
       children: subjectsInf(context),

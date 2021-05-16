@@ -7,7 +7,7 @@ import 'package:schedule/schedule/classes/day.dart';
 import 'package:schedule/schedule/classes/enums.dart';
 import 'package:schedule/schedule/classes/normalLesson/normalLesson.dart';
 import 'package:schedule/screens/displayPages/subjectProvider.dart';
-import 'package:schedule/screens/editPages/EditModePage.dart';
+import 'package:schedule/screens/editPages/editModePage/EditModePage.dart';
 import 'package:schedule/screens/settingsPage/settingsProvider.dart';
 
 class WeekPage extends StatelessWidget {
@@ -18,56 +18,54 @@ class WeekPage extends StatelessWidget {
     TextStyle _textStyle = TextStyle(
         color: Colors.black, fontWeight: FontWeight.bold, fontSize: width / 20);
     var settings = SettingsProvider();
-    return Scaffold(
-      body: ListView.separated(
-        key: PageStorageKey<String>('WeekPageScrollingPosition'),
-        itemCount: 7,
-        separatorBuilder: (context, index) => SizedBox(height: 10),
-        itemBuilder: (BuildContext context, int index) {
-          return Card(
-            margin: EdgeInsets.all(10),
-            child: ListTileTheme(
-              tileColor: Colors.cyan[50],
-              selectedColor: Colors.black,
-              child: GestureDetector(
-                onLongPress: () {
-                  if (settings.isSaved && !settings.overWrite) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              EditModePage(index)),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                            'Для редактирования вы должны сохранить это расписание в настройках'),
-                      ),
-                    );
-                  }
-                },
-                child: ExpansionTile(
-                  childrenPadding: EdgeInsets.symmetric(horizontal: 10),
-                  key: PageStorageKey<String>('lessonCard' + index.toString()),
-
-                  ///дабы вкладки оставались открытыми
-                  title: Container(
-                    width: double.infinity,
-                    // height: double.infinity,
-                    child: Text(
-                      DaysOfWeek.values[index].asString(),
-                      style: _textStyle,
+    return ListView.separated(
+      key: PageStorageKey<String>('WeekPageScrollingPosition'),
+      itemCount: 7,
+      separatorBuilder: (context, index) => SizedBox(height: 10),
+      itemBuilder: (BuildContext context, int index) {
+        return Card(
+          margin: EdgeInsets.all(10),
+          child: ListTileTheme(
+            tileColor: Colors.cyan[50],
+            selectedColor: Colors.black,
+            child: GestureDetector(
+              onLongPress: () {
+                if (settings.isSaved && !settings.overWrite) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => EditModePage(index)),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      //TODO hero tag error
+                      content: Text(
+                          'Для редактирования вы должны сохранить это расписание в настройках'),
                     ),
-                  ),
+                  );
+                }
+              },
+              child: ExpansionTile(
+                childrenPadding: EdgeInsets.symmetric(horizontal: 10),
+                key: PageStorageKey<String>('lessonCard' + index.toString()),
 
-                  children: expansionTileItems(context, index),
+                ///дабы вкладки оставались открытыми
+                title: Container(
+                  width: double.infinity,
+                  // height: double.infinity,
+                  child: Text(
+                    DaysOfWeek.values[index].asString(),
+                    style: _textStyle,
+                  ),
                 ),
+
+                children: expansionTileItems(context, index),
               ),
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }

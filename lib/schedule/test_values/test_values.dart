@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:schedule/main.dart';
 import 'package:schedule/schedule/classes/import_classes.dart';
 import 'package:schedule/schedule/classes/teacher/teacher.dart';
+import 'package:schedule/screens/editPages/editModePage/editProvider.dart';
 import 'package:schedule/screens/entryPage/EntryPageProvider.dart';
 
 class Pair<FT, ST> {
@@ -122,4 +124,52 @@ String degreeFromString(String degree) {
     return "Магистратура";
   } else if (degree == 'postgraduate') return "Аспирантура";
   return ' ';
+}
+
+List<DropdownMenuItem<Grade>> editPageGradeItems() {
+  var editor = EditProvider();
+  return editor.grades
+      .map(
+        (grade) => DropdownMenuItem<Grade>(
+          value: grade,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: FittedBox(
+              fit: BoxFit.fill,
+              child: Text(
+                degreeFromString(grade.degree) +
+                    ' ' +
+                    grade.n.toString() +
+                    ' курс',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+      )
+      .toList();
+}
+
+List<DropdownMenuItem<Group>> editPageGroupItems(Grade curGrade) {
+  var editor = EditProvider();
+  var groups = editor.allgroups
+      .firstWhere((grade) => grade.any((gr) => gr.gradeid == curGrade.id));
+  var res = groups
+      .map(
+        (group) => DropdownMenuItem<Group>(
+          value: group,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 15),
+            child: FittedBox(
+              fit: BoxFit.fill,
+              child: Text(
+                group.name + ' группа ' + group.n.toString(),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ),
+      )
+      .toList();
+  return res;
 }

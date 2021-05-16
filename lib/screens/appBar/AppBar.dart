@@ -3,6 +3,7 @@ import 'package:schedule/main.dart';
 import 'package:schedule/schedule/classes/enums.dart';
 import 'package:schedule/screens/displayPages/subjectProvider.dart';
 import 'package:schedule/screens/settingsPage/SettingsPage.dart';
+import 'package:schedule/screens/widgetsHelper/widgetsHelper.dart';
 
 //Апп бар для EntryPage
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -122,13 +123,6 @@ class EditPageAppBar extends StatelessWidget implements PreferredSizeWidget {
         'РАСПИСАНИЕ ИММиКН',
         style: TextStyle(fontSize: sizeCoef * 0.042),
       ),
-      leading: TextButton(
-        onPressed: () => Navigator.pop(context),
-        child: Icon(
-          Icons.arrow_back,
-          color: Colors.white,
-        ),
-      ),
       actions: [
         TextButton(
           onPressed: () {
@@ -195,28 +189,6 @@ class MyBottomBar extends StatelessWidget {
             (currentWeek == selectedWeek ? " (текущая)" : "") +
             " неделя",
         textAlign: TextAlign.center,
-      ),
-    );
-  }
-}
-
-class MyButton extends StatelessWidget {
-  final double size;
-  final VoidCallback onTap;
-  final Widget child;
-  const MyButton({Key key, this.size, this.onTap, this.child})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Ink(
-        child: Container(
-          width: size,
-          height: size,
-          child: child,
-        ),
       ),
     );
   }
