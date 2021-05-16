@@ -160,24 +160,9 @@ AlertDialog lessonInfo(
     ),
     actions: [
       TextButton(
-        child: Text('Изменить'),
-        onPressed: () {
-          // Route route = CupertinoPageRoute(
-          //     builder: (context) => EditPage(ind, lesson),
-          //     settings: RouteSettings(name: "WeekPageAlertDialog"));
-          // Navigator.push(context, route);
-          var notification = NotificationService();
-          var provider = SubjectProvider();
-          provider.scheduleAlarms();
-          // notification.scheduleAlarm(AlarmInfo(lesson));
-        },
-      ),
-      TextButton(
         child: Text('Ок'),
         onPressed: () {
-          var provider = SubjectProvider();
-          provider.aaa();
-          // Navigator.pop(context);
+          Navigator.pop(context);
         },
       ),
     ],

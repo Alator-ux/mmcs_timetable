@@ -16,9 +16,11 @@ class EditModePage extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
-      value: EditProvider(),
-      child: EditModePageHelper(),
+    return ScaffoldMessenger(
+      child: ChangeNotifierProvider.value(
+        value: EditProvider(),
+        child: EditModePageHelper(),
+      ),
     );
   }
 }
@@ -92,7 +94,7 @@ class _EditModePageHelperState extends State<EditModePageHelper> {
           ),
         ],
       ),
-      appBar: EditPageAppBar(),
+      appBar: EditModePageAppBar(),
       body: SingleChildScrollView(
         child: Column(
           children: [

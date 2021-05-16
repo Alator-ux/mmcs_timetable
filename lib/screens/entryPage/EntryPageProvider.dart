@@ -98,6 +98,7 @@ class EntryPageProvider with ChangeNotifier {
       },
     );
     var typeOfWeekInd = await api.getCurrentWeek();
+    typeOfWeekInd = (typeOfWeekInd + 1) % 2; //В апи другой порядок енама
     typeOfWeek = TypeOfWeek.values[typeOfWeekInd];
     scheduleFilled = true;
     changeGradeID(grades.first.id);

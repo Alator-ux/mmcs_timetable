@@ -55,7 +55,8 @@ class _EditColumnState extends State<EditColumn> {
 
   String _subjectAbbrValidator(String value) {
     if (value.length > 20) return "Пожалуйста, сократите назвавание";
-    if (subjectNameKey.currentState.value.length > 30 && value.length == 0) {
+    if (subjectNameKey.currentState.value.length > 30 &&
+        (value == "" || value.length == 0)) {
       return "Название предмета слишком длинное. Пожалуйста, введите аббревиатуру";
     }
     return null;
@@ -85,8 +86,8 @@ class _EditColumnState extends State<EditColumn> {
   }
 
   String _teacherValidator(String value) {
-    if (GroupProvider().groups.length > 12)
-      return "Превышено максимальное количество групп (12)";
+    if (GroupProvider().groups.length > 8)
+      return "Превышено максимальное количество групп (8)";
     return null;
   }
 

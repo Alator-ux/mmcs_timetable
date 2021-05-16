@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:schedule/main.dart';
 import 'package:schedule/schedule/classes/import_classes.dart';
 import 'package:schedule/schedule/classes/teacher/teacher.dart';
 import 'package:schedule/screens/editPages/editModePage/editProvider.dart';

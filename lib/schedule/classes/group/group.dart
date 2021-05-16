@@ -29,13 +29,42 @@ class Group {
 
   ///Only for teachers
   String asString() {
-    if (gradenum == null || groupnum == null || name == null) {
+    if (gradenum == null || (groupnum == null && n == null) || name == null) {
       return "";
     }
-    return '$gradenum.$groupnum ($name)';
+    int t;
+    if (groupnum == null) {
+      t = n;
+    } else {
+      t = groupnum;
+    }
+    return '$gradenum.$t';
+  }
+
+  static int compareGroups(Group gr1, Group gr2) {
+    if (gr1.gradenum > gr2.gradenum) {
+      return 1;
+    }
+    if (gr1.gradenum == gr2.gradenum) {
+      if (gr1.groupnum > gr2.groupnum) {
+        return 1;
+      } else {
+        return -1;
+      }
+    }
+    return -1;
   }
 
   bool isEqual(Group other) {
+    var res = true;
+    res = res && id == other.id;
+    res = res && name == other.name;
+    res = res && n == other.n;
+    res = res && gradeid == other.gradeid;
+    return res;
+  }
+
+  bool isEqualFroNotPrimitive(Group other) {
     var res = true;
     res = res && id == other.id;
     res = res && name == other.name;
@@ -74,7 +103,7 @@ class Group {
       groupAsString = groupAsString.replaceAll(' ', '');
       var gradenum = int.parse(groupAsString[0]);
       var firstBracketInd = groupAsString.indexOf('(');
-      var groupnum = int.parse(groupAsString.substring(1, firstBracketInd));
+      var groupnum = int.parse(groupAsString.substring(2, firstBracketInd));
       var secondBracketInd = groupAsString.indexOf(')');
       var name = groupAsString.substring(firstBracketInd + 1, secondBracketInd);
       var newGroup = Group(
@@ -88,6 +117,20 @@ class Group {
           uberid: uberid);
       res.add(newGroup);
     }
+    return res;
+  }
+
+  static String groupsAsString(List<Group> groups) {
+    String res = "";
+    if (groups == null || groups.length == 0) {
+      return res;
+    }
+    for (var groupID = 0; groupID < groups.length - 1; groupID++) {
+      var groupAsString = groups[groupID].asString();
+      res += '$groupAsString, ';
+    }
+    var groupAsString = groups[groups.length - 1].asString();
+    res += '$groupAsString';
     return res;
   }
 }

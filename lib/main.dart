@@ -5,20 +5,15 @@ import 'package:schedule/screens/appBar/AppBar.dart';
 import 'package:schedule/screens/displayPages/DayPage.dart';
 import 'package:schedule/screens/entryPage/EntryPageProvider.dart';
 import 'package:schedule/screens/settingsPage/settingsProvider.dart';
-import 'package:schedule/screens/updateProvider.dart';
 import 'notifications/notification_service.dart';
 import 'screens/entryPage/EntryPage.dart';
-
-String initialRoute;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   NotificationService notification = NotificationService();
   await notification.configureNotifications();
-  initialRoute = await notification.getInitialRoute();
   SettingsProvider settings = SettingsProvider();
   await settings.init();
-  initialRoute = settings.isSaved ? DayPage.routeName : MainPage.routeName;
   var route = settings.isSaved ? ScreenRoute.displayPage : ScreenRoute.mainPage;
   NavigationController.create(route);
 

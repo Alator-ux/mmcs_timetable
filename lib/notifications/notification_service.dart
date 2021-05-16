@@ -51,7 +51,7 @@ class NotificationService {
   ///Notification settings for android and ios platforms
   Future<void> _configureInitializationSettings() async {
     const initializationSettingsAndroid =
-        AndroidInitializationSettings('ic_stat_onesignal_default');
+        AndroidInitializationSettings('ic_stat_access_time');
     // final initializationSettingsIOS = IOSInitializationSettings(
     //     requestAlertPermission: true,
     //     requestBadgePermission: true,
@@ -71,7 +71,7 @@ class NotificationService {
     tz.initializeTimeZones();
     var locations = tz.timeZoneDatabase.locations;
     final locationName = tz.getLocation('Europe/Moscow');
-    // tz.getLocation(locations.keys.first); //TODO сделать нормальную локаль
+    // tz.getLocation(locations.keys.first);
     tz.setLocalLocation(locationName);
   }
 

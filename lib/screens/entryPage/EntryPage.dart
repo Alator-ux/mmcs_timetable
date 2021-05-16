@@ -59,25 +59,107 @@ class _EntryPageState extends State<EntryPage> {
         ),
         InformationCard(),
         SizedBox(height: 20),
-        nextButton(context),
-        CustomButton(
-          // color: Colors.grey[200],
-          child: Text(
-            "Обновить",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          onTap: provider.isOnline
-              ? () {
-                  if (provider.dbFilled) {
-                    //TODO snackbar
-                    // provider.refresh(context);
-                  }
-                  // var notification = NotificationService();
-                  // notification.scheduleAlarm(DateTime.now().hashCode);
-                }
-              : null,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            CustomButton(
+              height: SizeProvider().getSize(0.08, from: SizeFrom.height),
+              width: SizeProvider().getSize(0.45),
+              child: Text(
+                "Зайти в сохраненное",
+                style: TextStyle(
+                    fontSize: SizeProvider().getSize(0.04),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
+              onTap: SettingsProvider().isSaved
+                  ? () async {
+                      var settings = SettingsProvider();
+                      await settings.initSubjectProvider();
+                      var controller = NavigationController();
+                      controller.changeScreen(ScreenRoute.displayPage);
+                    }
+                  : () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text("У вас нет сохраненного расписания"),
+                        ),
+                      );
+                    },
+            ),
+            nextButton(),
+          ],
         ),
       ],
+    );
+  }
+
+  Widget nextButton() {
+    var provider = Provider.of<EntryPageProvider>(context);
+    return CustomButton(
+      height: SizeProvider().getSize(0.08, from: SizeFrom.height),
+      width: SizeProvider().getSize(0.45),
+      child: Text(
+        "Далее",
+        style: TextStyle(
+            fontSize: SizeProvider().getSize(0.04),
+            fontWeight: FontWeight.bold,
+            color: Colors.white),
+      ),
+      onTap: () async {
+        if (!provider.canShowGroups || !provider.isOnline) {
+          var settings = SettingsProvider();
+          if (!settings.isSaved) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Отсутствует подключение к интернету"),
+              ),
+            );
+          } else {
+            showDialog<void>(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text("Отсутствует подключение к интернету"),
+                content: Text("Отсутствует подключение к интернету," +
+                    '\n' +
+                    " однако у вас есть сохраненное расписание." +
+                    '\n' +
+                    "Желаете ли вы его загрузить?"),
+                actions: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text('Нет'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          var controller = NavigationController();
+                          controller.changeScreen(ScreenRoute.displayPage);
+                        },
+                        child: Text('Да'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          }
+        } else {
+          var value = await provider.getCurrentSchedule();
+          var userType = provider.userType;
+          var typeOfWeek = provider.typeOfWeek;
+          var grades = provider.grades;
+          var groups = provider.allgroups;
+          SubjectProvider.create(value, grades, groups, userType, typeOfWeek);
+          var controller = NavigationController();
+          controller.changeScreen(ScreenRoute.displayPage);
+        }
+      },
     );
   }
 }
@@ -143,68 +225,5 @@ Widget teacherCard(TextStyle _textStyle) {
       ButtonTheme(
           alignedDropdown: true, child: TeacherDropDownButton(_textStyle)),
     ],
-  );
-}
-
-Widget nextButton(BuildContext context) {
-  var provider = Provider.of<EntryPageProvider>(context);
-  return CustomButton(
-    // color: Colors.grey[200],
-    child: Text(
-      "Далее",
-      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-    ),
-    onTap: () async {
-      if (!provider.canShowGroups || !provider.isOnline) {
-        var settings = SettingsProvider();
-        if (!settings.isSaved) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("Отсутствует подключение к интернету"),
-            ),
-          );
-        } else {
-          showDialog<void>(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text("Отсутствует подключение к интернету"),
-              content: Text("Отсутствует подключение к интернету," +
-                  '\n' +
-                  " однако у вас есть сохраненное расписание." +
-                  '\n' +
-                  "Желаете ли вы его загрузить?"), //TODO test
-              actions: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text('Нет'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        var controller = NavigationController();
-                        controller.changeScreen(ScreenRoute.displayPage);
-                      },
-                      child: Text('Да'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          );
-        }
-      } else {
-        var value = await provider.getCurrentSchedule();
-        var userType = provider.userType;
-        var typeOfWeek = provider.typeOfWeek;
-        SubjectProvider.create(value, userType, typeOfWeek);
-        var controller = NavigationController();
-        controller.changeScreen(ScreenRoute.displayPage);
-      }
-    },
   );
 }

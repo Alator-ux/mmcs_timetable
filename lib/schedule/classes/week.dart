@@ -57,7 +57,7 @@ class Week {
   }
 
   bool isEqual(Week other) {
-    for (int dayInd = 0; dayInd < 8; dayInd++) {
+    for (int dayInd = 0; dayInd < 7; dayInd++) {
       var thisDay = days[dayInd];
       var otherDay = other.days[dayInd];
       if (!thisDay.isEqual(otherDay)) {

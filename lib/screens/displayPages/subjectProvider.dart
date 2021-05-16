@@ -4,6 +4,8 @@ import 'package:schedule/database/gerard-benedict.dart';
 import 'package:schedule/notifications/notification_service.dart';
 import 'package:schedule/schedule/classes/day.dart';
 import 'package:schedule/schedule/classes/enums.dart';
+import 'package:schedule/schedule/classes/grade/grade.dart';
+import 'package:schedule/schedule/classes/group/group.dart';
 import 'package:schedule/schedule/classes/normalLesson/normalLesson.dart';
 import 'package:schedule/schedule/classes/week.dart';
 
@@ -11,6 +13,8 @@ class SubjectProvider with ChangeNotifier {
   final DBProvider db = DBProvider.db;
   static SubjectProvider _instance;
   List<Week> _weeks;
+  List<Grade> _grades;
+  List<List<Group>> _allgroups;
   int _curDay = DateTime.now().weekday - 1;
   TypeOfWeek _selectedWeek;
   TypeOfWeek _currentWeek;
@@ -23,10 +27,12 @@ class SubjectProvider with ChangeNotifier {
     return _instance;
   }
 
-  factory SubjectProvider.create(
-      List<Week> weeks, UserType userType, TypeOfWeek typeOfWeek) {
+  factory SubjectProvider.create(List<Week> weeks, List<Grade> grades,
+      List<List<Group>> allgroups, UserType userType, TypeOfWeek typeOfWeek) {
     var res = SubjectProvider();
     res.refresh(weeks, userType, typeOfWeek);
+    res._allgroups = allgroups;
+    res._grades = grades;
     return res;
   }
 
@@ -47,7 +53,17 @@ class SubjectProvider with ChangeNotifier {
     } else {
       weeks = await db.getWeeksForTeacher(1);
     }
-    return SubjectProvider.create(weeks, userType, typeOfWeek);
+    var grades = await db.getAllGrades();
+    List<int> gradeid = [];
+    await Future.forEach(
+      grades,
+      (grade) {
+        gradeid.add(grade.id);
+      },
+    );
+    var allGroups = await db.getAllGroups(gradeid);
+    return SubjectProvider.create(
+        weeks, grades, allGroups, userType, typeOfWeek);
   }
 
   ///Fill updateable rows in db from unupdateable
@@ -60,7 +76,7 @@ class SubjectProvider with ChangeNotifier {
       weeks = await db.getWeeksForTeacher(0);
     }
     await db.refreshWeeks(weeks);
-    return SubjectProvider.create(weeks, userType, _currentWeek);
+    refresh(weeks, userType, currentWeek);
   }
 
   Day get currentDay {
@@ -87,66 +103,31 @@ class SubjectProvider with ChangeNotifier {
     return _weeks;
   }
 
+  List<List<Group>> get allGroups {
+    return _allgroups;
+  }
+
+  List<Grade> get grades {
+    return _grades;
+  }
+
   void changeSelectedWeek() {
     _selectedWeek =
         _selectedWeek == TypeOfWeek.lower ? TypeOfWeek.upper : TypeOfWeek.lower;
     notifyListeners();
   }
 
-  // void replaceLesson(NormalLesson oldLesson, NormalLesson newLesson) { //TODO удалить
-  //   var dayID = oldLesson.dayid;
-  //   var ind = _weeks[_selectedWeek.index]
-  //       .days[dayID]
-  //       .normalLessons
-  //       .indexOf(oldLesson);
-  //   if (ind == -1) {
-  //     addNewLesson(newLesson);
-  //   } else {
-  //     _weeks[_selectedWeek.index].days[dayID].normalLessons[ind] = newLesson;
-  //     scheduleAlarms();
-  //     notifyListeners();
-  //   }
-  // }
-
-  // void addNewLesson(NormalLesson newLesson) { //TODO удалить
-  //   var dayID = newLesson.dayid;
-  //   // newLesson.lessonid = _generateID();
-  //   _weeks[_selectedWeek.index].days[dayID].normalLessons.add(newLesson);
-  //   _weeks[_selectedWeek.index]
-  //       .days[dayID]
-  //       .normalLessons
-  //       .sort((l1, l2) => IntervalOfTime.compare(l1.time, l2.time));
-  //   scheduleAlarms();
-  //   notifyListeners();
-  // }
-
   ///Schedule notifications for ~ a month
   void scheduleAlarms() async {
     alarms = AlarmInfo.alarmsFromList(_weeks, _currentWeek.index);
     var notification = NotificationService();
     await notification.scheduleAlarmList(alarms);
-    var notifs = await notification.getNotifs();
-    print('');
   }
 
   ///Schedule cancel all scheduled alarms
   void cancelAlarms() async {
     var notification = NotificationService();
     await notification.cancelAll();
-  }
-
-  void aaa() async {
-    var notification = NotificationService();
-    var notifs = await notification.getNotifs();
-    notifs.forEach((element) {
-      print(element.body + " " + element.title + " " + element.payload);
-    });
-    var aaaaa =
-        notifs.where((elem) => elem.payload == "2021-05-10 08:00:00.000+0300");
-    aaaaa.forEach((element) {
-      print(element.payload);
-    });
-    print('');
   }
 
   /// Set temp lessons. On call function "save" this lessons

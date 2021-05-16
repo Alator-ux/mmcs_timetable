@@ -51,25 +51,6 @@ class _DayPageHelperState extends State<DayPageHelper> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: MyAppBarHelp(),
-      body: Builder(builder: (context) {
-        return PageView(
-          children: [Subjects(), WeekPage()], //TODO builder
-        );
-      }),
-      bottomNavigationBar: MyBottomBar(
-        currentWeek: provider.currentWeek,
-        selectedWeek: provider.selectedWeek,
-      ),
-    );
-  }
-}
-
-class Subjects extends StatelessWidget {
-  static const String routeName = '/EntryPage/DayPage/Subjects';
-  @override
-  Widget build(BuildContext context) {
     Future.delayed(
       Duration.zero,
       () {
@@ -88,12 +69,14 @@ class Subjects extends StatelessWidget {
                   children: [
                     TextButton(
                       onPressed: () {
+                        updProvider.changeNeedToUpdate(false);
                         Navigator.pop(context);
                       },
                       child: Text('Нет'),
                     ),
                     TextButton(
                       onPressed: () {
+                        updProvider.changeNeedToUpdate(false);
                         provider.refresh(updProvider.apiWeeks,
                             provider.userType, provider.currentWeek);
                       },
@@ -107,6 +90,27 @@ class Subjects extends StatelessWidget {
         }
       },
     );
+    return ScaffoldMessenger(
+      child: Scaffold(
+        appBar: MyAppBarHelp(),
+        body: Builder(builder: (context) {
+          return PageView(
+            children: [Subjects(), WeekPage()], //TODO builder
+          );
+        }),
+        bottomNavigationBar: MyBottomBar(
+          currentWeek: provider.currentWeek,
+          selectedWeek: provider.selectedWeek,
+        ),
+      ),
+    );
+  }
+}
+
+class Subjects extends StatelessWidget {
+  static const String routeName = '/EntryPage/DayPage/Subjects';
+  @override
+  Widget build(BuildContext context) {
     return ListView(
       key: PageStorageKey<String>('DayPageScrollingPosition'),
       children: subjectsInf(context),
@@ -228,11 +232,14 @@ List<Widget> subjectsInf(BuildContext context) {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        Flexible(
+                          child: Text(
                             userType == UserType.student
                                 ? lesson.teachername
                                 : lesson.groupsAsString(),
-                            style: _textStyle),
+                            style: _textStyle,
+                          ),
+                        ),
                         Text('Аудитория: ' + lesson.roomname,
                             style: _textStyle),
                       ],

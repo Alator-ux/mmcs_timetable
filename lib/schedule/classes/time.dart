@@ -104,6 +104,10 @@ class IntervalOfTime {
   }
 
   bool isCrossed(IntervalOfTime other) {
+    if (this.isEqual(other)) {
+      return true;
+    }
+
     if ((this.begin.hour < other.begin.hour) &&
         (this.end.hour < other.begin.hour)) {
       return false;
@@ -113,13 +117,12 @@ class IntervalOfTime {
       return false;
     }
     if (this.end.hour == other.begin.hour) {
-      if (this.end.minute > other.begin.minute) {
-        //?
+      if (this.end.minute <= other.begin.minute) {
         return false;
       }
     }
     if (this.begin.hour == other.end.hour) {
-      if (this.begin.minute > other.end.minute) {
+      if (this.begin.minute >= other.end.minute) {
         return false;
       }
     }

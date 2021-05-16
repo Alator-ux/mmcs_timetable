@@ -35,9 +35,17 @@ class NormalLesson {
 
   factory NormalLesson.forDay(Lesson lesson, Curricula curricula,
       List<Group> groups, TypeOfWeek tweek) {
-    // Т.к. normalesson может быть только upper или lower (но не full)
-    // это сделано для индивидуальности id
+    List<Group> gr = null;
+    var uberid = lesson.uberid * 10 + tweek.index;
+    if (groups != null) {
+      gr = List.generate(groups.length, (index) => Group.copy(groups[index]));
+      gr.forEach((group) {
+        group.uberid = uberid;
+      });
+    }
     return NormalLesson(
+      // Т.к. normalesson может быть только upper или lower (но не full)
+      // это сделано для индивидуальности id
       lessonid: lesson.id * 10 + tweek.index,
       dayid: lesson.day,
       typeOfWeek: tweek,
@@ -47,8 +55,8 @@ class NormalLesson {
       subjectabbr: curricula.subjectabbr,
       teachername: curricula.teachername,
       roomname: curricula.roomname,
-      groups: groups,
-      uberid: lesson.uberid,
+      groups: gr,
+      uberid: uberid,
     );
   }
   factory NormalLesson.fromJson(Map<String, dynamic> json) {
@@ -127,33 +135,26 @@ class NormalLesson {
 
   ///Only for teachers
   String groupsAsString() {
-    String res = "";
-    if (groups == null || groups.length == 0) {
-      return res;
-    }
-    for (var groupID = 0; groupID < groups.length - 1; groupID++) {
-      var groupAsString = groups[groupID].asString();
-      res += '$groupAsString, ';
-    }
-    var groupAsString = groups[groups.length - 1].asString();
-    res += '$groupAsString';
-    return res;
+    return Group.groupsAsString(groups);
   }
 
   bool isEqual(NormalLesson other) {
     var res = true;
     res = res && dayid == other.dayid;
     res = res && groupid == other.groupid;
-    if (groups == null || other == null) {
-      return false;
-    } else if (groups.length != other.groups.length) {
+    if (other == null) {
       return false;
     }
-    for (int groupId = 0; groupId < groups.length; groupId++) {
-      var thisGroup = groups[groupId];
-      var otherGroup = other.groups[groupId];
-      if (!thisGroup.isEqual(otherGroup)) {
+    if (groups != null) {
+      if (groups.length != other.groups.length) {
         return false;
+      }
+      for (int groupId = 0; groupId < groups.length; groupId++) {
+        var thisGroup = groups[groupId];
+        var otherGroup = other.groups[groupId];
+        if (!thisGroup.isEqualFroNotPrimitive(otherGroup)) {
+          return false;
+        }
       }
     }
     res = res && lessonid == other.lessonid;

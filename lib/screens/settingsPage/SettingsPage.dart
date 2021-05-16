@@ -201,7 +201,7 @@ class __SettingsPageState extends State<_SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: EditPageAppBar(),
+      appBar: SettingsPageAppBar(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

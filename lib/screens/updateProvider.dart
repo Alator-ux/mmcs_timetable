@@ -31,6 +31,9 @@ class UpdateProvider with ChangeNotifier {
     if (_settings.isSaved) {
       var status = await _connectivity.currentStatus;
       _isOnline = status == ConnectionStatus.Online;
+    } else {
+      needToUpdate = false;
+      return;
     }
     if (!_isOnline) {
       return;
@@ -38,7 +41,7 @@ class UpdateProvider with ChangeNotifier {
 
     var userType = _settings.userType;
     var id = _settings.id;
-    var savedTypeOfWeek = _settings.calculateCurrentWeek(); //TODO устанавливать
+    var savedTypeOfWeek = _settings.calculateCurrentWeek();
     Schedule schedule;
     List<Week> weeks = [];
     if (userType == UserType.student) {
@@ -62,6 +65,13 @@ class UpdateProvider with ChangeNotifier {
       apiGrades,
       (grade) async {
         var groups = await _api.getGroups(grade.id);
+        groups.forEach(
+          (group) {
+            group.degree = grade.degree;
+            group.gradenum = grade.n;
+            group.groupnum = group.n;
+          },
+        );
         apiAllGroups.add(groups);
       },
     );
@@ -77,11 +87,11 @@ class UpdateProvider with ChangeNotifier {
     var allGroups = await _db.getAllGroups(gradeid);
 
     if (apiGradeid.length != gradeid.length) {
-      await _db.refreshGrades(grades);
+      await _db.refreshGrades(apiGrades);
     } else {
       for (int i = 0; i < gradeid.length; i++) {
         if (apiGradeid[i] != gradeid[i]) {
-          await _db.refreshGrades(grades);
+          await _db.refreshGrades(apiGrades);
           break;
         }
       }
@@ -90,8 +100,19 @@ class UpdateProvider with ChangeNotifier {
       await _db.refreshAllGroups(apiAllGroups);
     } else {
       for (int i = 0; i < allGroups.length; i++) {
-        if (apiAllGroups[i] != allGroups[i]) {
+        var flag = false;
+        if (apiAllGroups[i].length != allGroups[i].length) {
           await _db.refreshAllGroups(apiAllGroups);
+          break;
+        }
+        for (int j = 0; j < allGroups[i].length; j++) {
+          if (!apiAllGroups[i][j].isEqual(allGroups[i][j])) {
+            await _db.refreshAllGroups(apiAllGroups);
+            flag = true;
+            break;
+          }
+        }
+        if (flag) {
           break;
         }
       }
@@ -109,9 +130,16 @@ class UpdateProvider with ChangeNotifier {
       needToUpdate = true;
     } else if (!weeks[1].isEqual(apiWeeks[1])) {
       needToUpdate = true;
-    } else if (savedTypeOfWeek != _typeOfWeek) {
-      needToUpdate = true;
     }
+    // } else if (savedTypeOfWeek != _typeOfWeek) {
+
+    // }
+
+    notifyListeners();
+  }
+
+  void changeNeedToUpdate(bool flag) {
+    needToUpdate = flag;
     notifyListeners();
   }
 }
