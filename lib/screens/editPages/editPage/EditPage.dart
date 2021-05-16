@@ -21,9 +21,11 @@ class EditPage extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: EditPageAppBar(),
-      body: EditColumn(lesson),
+    return ScaffoldMessenger(
+      child: Scaffold(
+        appBar: EditPageAppBar(),
+        body: EditColumn(lesson),
+      ),
     );
   }
 }
